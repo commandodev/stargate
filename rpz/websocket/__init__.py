@@ -1,0 +1,85 @@
+import errno
+from eventlet import wsgi
+from eventlet.common import get_errno
+from eventlet.green import socket
+from eventlet.websocket import WebSocket
+from webob import Response
+from webob.exc import HTTPBadRequest, HTTPServerError
+from pprint import pformat
+
+class IncorrectlyConfigured(Exception):
+    """Exception to use in place of an assertion error"""
+
+
+def is_websocket(request):
+    """Custom predicate to denote a websocket handshake"""
+    try:
+        return (request.headers['Upgrade'] == 'WebSocket') and \
+               (request.headers['Connection'] == 'Upgrade')
+    except KeyError:
+        return False
+
+
+class WebSocketView(object):
+    """A view for handling websockets
+
+    This view handles both the upgrade request and the ongoing socket
+    communiction.
+    """
+
+    def __init__(self, request):
+        self.request = request
+        self.environ = request.environ
+        self.sock = self.environ['eventlet.input'].get_socket()
+
+    def __call__(self):
+        return self.handle_upgrade()
+
+    def handler(self, websocket): #pragma NO COVER
+        """Handles the interaction with the websocket after being set up
+
+        This is the method to override in subclasses to receive and send
+        messages over the websocket connection
+        """
+        raise NotImplementedError
+
+    def handle_websocket(self, websocket):
+        """Handles the connection after setup and after the socket is closed
+
+        Hands off to :meth:`handle` until the socket is closed and then
+        ensures a correct :class:`webob.Response` is returned
+        """
+        try:
+            self.handler(websocket)
+        except socket.error, e: #pragma NO COVER
+            if get_errno(e) != errno.EPIPE:
+                raise
+        # use this undocumented feature of eventlet.wsgi to close the
+        # connection properly
+        resp = Response()
+        resp.app_iter = wsgi.ALREADY_HANDLED
+        return resp
+
+    def handle_upgrade(self):
+        """Completes the upgrade request sent by the browser
+
+        Sends the headers required to set up to websocket connection back to
+        the browser and then hands off to :meth:`handle_websocket`. See:
+        http://en.wikipedia.org/wiki/Web_Sockets#WebSocket_Protocol_Handshake
+        """
+        if not (self.environ.get('HTTP_CONNECTION') == 'Upgrade' and
+        self.environ.get('HTTP_UPGRADE') == 'WebSocket'):
+            response = HTTPBadRequest(headers=dict(Connection='Close'))
+            response.body = 'Bad:\n%s' % pformat(self.environ)
+            return response
+        sock = self.environ['eventlet.input'].get_socket()
+        handshake_reply = ("HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
+        "Upgrade: WebSocket\r\n"
+        "Connection: Upgrade\r\n"
+        "WebSocket-Origin: %s\r\n"
+        "WebSocket-Location: ws://%s%s\r\n\r\n" % (
+        self.request.host_url,
+        self.request.host, self.request.path_info))
+        sock.sendall(handshake_reply)
+        websocket = WebSocket(self.sock, self.environ)
+        return self.handle_websocket(websocket)

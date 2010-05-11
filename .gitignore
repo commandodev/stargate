@@ -1,0 +1,15 @@
+*.pyc
+.idea/*
+*~
+.installed.cfg
+bin
+deps
+eggs
+develop-eggs
+parts
+*.egg-info
+.coverage
+cover
+*,cover
+.nodeids
+*.log
