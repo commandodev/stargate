@@ -1,7 +1,7 @@
 Introduction
 ============
 
-rpz.websocket is a package for adding WebSocket [Websockets]_ support to
+rpz.websocket is a package for adding WebSocket WebSockets_ support to
 repoze.bfg applications.
 
 What is a WebSocket?
@@ -71,4 +71,4 @@ The server would send back::
     8jKS'y:G*Co,Wxa-
 
 
-.. [Ref] Book or article reference, URL or whatever.
+.. [WebSockets] http://en.wikipedia.org/wiki/Web_Sockets
