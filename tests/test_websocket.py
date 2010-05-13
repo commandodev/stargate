@@ -1,10 +1,11 @@
 import eventlet
 from eventlet import debug, hubs, Timeout, spawn_n, greenthread, wsgi, patcher
-from eventlet.green import urllib2
+from eventlet.green import urllib2, httplib
 from eventlet.websocket import WebSocket
 from nose.tools import ok_, eq_, set_trace, raises
 from paste import deploy
 from repoze.bfg.events import NewRequest
+from repoze.bfg.exceptions import NotFound
 from repoze.bfg.interfaces import IRequest
 from repoze.bfg.configuration import Configurator
 from repoze.bfg.threadlocal import get_current_request, get_current_registry
@@ -13,9 +14,9 @@ from StringIO import StringIO
 from zope.event import notify
 from zope.interface import implements
 from unittest import TestCase
-
+from webob.exc import HTTPNotFound
 from rpz.websocket.factory import server_factory
-from rpz.websocket import WebSocketView
+from rpz.websocket import WebSocketView, is_websocket
 
 #from repoze.debug.responselogger import ResponseLoggingMiddleware
 from logging import getLogger
@@ -24,17 +25,6 @@ import logging
 import mock
 import random
 
-httplib2 = patcher.import_patched('httplib2')
-
-
-class StubWebsocket(WebSocketView):
-
-    def handle_websocket(self, ws):
-        self._ws = ws
-        return super(StubWebsocket, self).handle_websocket(ws)
-
-    def handler(self, ws):
-        self.ws.close()
 
 class EchoWebsocket(WebSocketView):
 
@@ -63,6 +53,15 @@ class RangeWebsocket(WebSocketView):
 
 serve = server_factory({}, 'localhost', 6544)
 
+class Root(object):
+    pass
+
+def get_root(request):
+    return Root()
+
+def not_found(context, request):
+    assert(isinstance(context, NotFound))
+    return HTTPNotFound('404')
 ##### Borrowed from the eventlet tests package
 
 class TestIsTakingTooLong(Exception):
@@ -81,11 +80,15 @@ class LimitedTestCase(TestCase):
     def setUp(self):
         self.timer = None
         config = testing.setUp()
+        config._set_root_factory(get_root)
         config_logger = getLogger("config")
         config_logger.setLevel(logging.INFO)
-        config.add_route('ec', '/ec', EchoWebsocket)
-        config.add_route('stub', '/stub', StubWebsocket)
+        config.add_route('echo', '/echo', EchoWebsocket)
         config.add_route('range', '/range', RangeWebsocket)
+        config.add_view(name='traversal_echo', context=Root,
+                        view=EchoWebsocket, custom_predicates=[is_websocket])
+        # Add a not found view as setup_registry won't have been called
+        config.add_view(view=not_found, context=NotFound)
         config.end()
         self.config = config
         self.logfile = StringIO()
@@ -143,29 +146,40 @@ class LimitedTestCase(TestCase):
     @raises(urllib2.HTTPError)
     def test_incorrect_headers(self):
         try:
-            urllib2.urlopen("http://localhost:%s/stub" % self.port)
+            urllib2.urlopen("http://localhost:%s/echo" % self.port)
         except urllib2.HTTPError, e:
             eq_(e.code, 400)
+            raise
+
+    @raises(urllib2.HTTPError)
+    def test_traversal_view_lookup(self):
+        print '\n', self.port, '\n'
+        #eventlet.sleep(60)
+        try:
+            urllib2.urlopen("http://localhost:%s/traversal_echo" % self.port)
+        except urllib2.HTTPError, e:
+            eq_(e.code, 404)
             raise
 
     def test_incomplete_headers(self):
         headers = dict(kv.split(': ') for kv in [
                 "Upgrade: WebSocket",
-                #"Connection: Upgrade", Without this should trigger the HTTPServerError
+                # NOTE: intentionally no connection header
                 "Host: localhost:%s" % self.port,
                 "Origin: http://localhost:%s" % self.port,
                 "WebSocket-Protocol: ws",
                 ])
-        http = httplib2.Http()
-        resp, content = http.request("http://localhost:%s/stub" % self.port, headers=headers)
+        http = httplib.HTTPConnection('localhost', self.port)
+        http.request("GET", "/echo", headers=headers)
+        resp = http.getresponse()
 
-        eq_(resp['status'], '400')
-        eq_(resp['connection'], 'Close')
-        ok_(content.startswith('Bad:'))
+        self.assertEqual(resp.status, 400)
+        self.assertEqual(resp.getheader('connection'), 'Close')
+        self.assert_(resp.read().startswith('Incorrect headers for WebSocket request:'))
 
     def test_correct_upgrade_request(self):
         connect = [
-                "GET /ec HTTP/1.1",
+                "GET /echo HTTP/1.1",
                 "Upgrade: WebSocket",
                 "Connection: Upgrade",
                 "Host: localhost:%s" % self.port,
@@ -185,11 +199,35 @@ class LimitedTestCase(TestCase):
                                  'Upgrade: WebSocket',
                                  'Connection: Upgrade',
                                  'WebSocket-Origin: http://localhost:%s' % self.port,
-                                 'WebSocket-Location: ws://localhost:%s/ec\r\n\r\n' % self.port]))
+                                 'WebSocket-Location: ws://localhost:%s/echo\r\n\r\n' % self.port]))
+
+    def test_correct_traversal_upgrade_request(self):
+        connect = [
+                "GET /traversal_echo HTTP/1.1",
+                "Upgrade: WebSocket",
+                "Connection: Upgrade",
+                "Host: localhost:%s" % self.port,
+                "Origin: http://localhost:%s" % self.port,
+                "WebSocket-Protocol: ws",
+                ]
+        sock = eventlet.connect(
+            ('localhost', self.port))
+
+        fd = sock.makefile('rw', close=True)
+        fd.write('\r\n'.join(connect) + '\r\n\r\n')
+        fd.flush()
+        result = sock.recv(1024)
+        fd.close()
+        ## The server responds the correct Websocket handshake
+        eq_(result, '\r\n'.join(['HTTP/1.1 101 Web Socket Protocol Handshake',
+                                 'Upgrade: WebSocket',
+                                 'Connection: Upgrade',
+                                 'WebSocket-Origin: http://localhost:%s' % self.port,
+                                 'WebSocket-Location: ws://localhost:%s/traversal_echo\r\n\r\n' % self.port]))
 
     def test_sending_messages_to_websocket(self):
         connect = [
-                "GET /ec HTTP/1.1",
+                "GET /echo HTTP/1.1",
                 "Upgrade: WebSocket",
                 "Connection: Upgrade",
                 "Host: localhost:%s" % self.port,

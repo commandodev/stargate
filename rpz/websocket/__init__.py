@@ -1,6 +1,6 @@
 import errno
 from eventlet import wsgi
-from eventlet.common import get_errno
+from eventlet.support import get_errno
 from eventlet.green import socket
 from eventlet.websocket import WebSocket
 from webob import Response
@@ -10,8 +10,7 @@ from pprint import pformat
 class IncorrectlyConfigured(Exception):
     """Exception to use in place of an assertion error"""
 
-
-def is_websocket(request):
+def is_websocket(context, request):
     """Custom predicate to denote a websocket handshake"""
     try:
         return (request.headers['Upgrade'] == 'WebSocket') and \
@@ -70,7 +69,8 @@ class WebSocketView(object):
         if not (self.environ.get('HTTP_CONNECTION') == 'Upgrade' and
         self.environ.get('HTTP_UPGRADE') == 'WebSocket'):
             response = HTTPBadRequest(headers=dict(Connection='Close'))
-            response.body = 'Bad:\n%s' % pformat(self.environ)
+            response.body = 'Incorrect headers for WebSocket request:\n %s' % \
+                            self.request.headers
             return response
         sock = self.environ['eventlet.input'].get_socket()
         handshake_reply = ("HTTP/1.1 101 Web Socket Protocol Handshake\r\n"

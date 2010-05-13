@@ -7,6 +7,8 @@ deps
 eggs
 develop-eggs
 parts
+src
+*log.txt
 *.egg-info
 .coverage
 cover
