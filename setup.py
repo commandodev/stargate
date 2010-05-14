@@ -6,7 +6,7 @@ version = '0.1'
 setup(name='rpz.websocket',
       version=version,
       description="Real time web support for repoze",
-      long_description=open("README.txt").read() + "\n" +
+      long_description=open("README.rst").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from http://pypi.python.org/pypi?%3Aaction=list_classifiers
       classifiers=[
@@ -27,7 +27,7 @@ setup(name='rpz.websocket',
           'eventlet'
           # -*- Extra requirements: -*-
       ],
-      entry_points="""
-      # -*- Entry points: -*-
-      """,
+      entry_points = {
+      'paste.server_factory': ['eventlet_server = rpz.websocket.factory:server_factory'],
+      }
       )

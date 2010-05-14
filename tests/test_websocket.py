@@ -62,6 +62,7 @@ def get_root(request):
 def not_found(context, request):
     assert(isinstance(context, NotFound))
     return HTTPNotFound('404')
+
 ##### Borrowed from the eventlet tests package
 
 class TestIsTakingTooLong(Exception):
