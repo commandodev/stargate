@@ -16,3 +16,4 @@ cover
 .nodeids
 *.log
 nosetests.xml
+cobertura.xml
