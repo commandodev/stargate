@@ -17,3 +17,4 @@ cover
 *.log
 nosetests.xml
 cobertura.xml
+docs/_build/doctrees/
