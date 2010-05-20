@@ -1,17 +1,26 @@
+"""WebSocket support for repoze is implemented as a view which handles the
+upgrade request and which can be subclassed to provide send and recieve
+functionalitly
+"""
+
 import errno
 from eventlet import wsgi
 from eventlet.support import get_errno
 from eventlet.green import socket
 from eventlet.websocket import WebSocket
 from webob import Response
-from webob.exc import HTTPBadRequest, HTTPServerError
-from pprint import pformat
+from webob.exc import HTTPBadRequest
 
 class IncorrectlyConfigured(Exception):
     """Exception to use in place of an assertion error"""
 
 def is_websocket(context, request):
-    """Custom predicate to denote a websocket handshake"""
+    """Custom predicate to denote a websocket handshake
+
+    See [predicate_arguments]_
+    and the ``custom_predicate`` key word argument to
+    :meth:`repoze.bfg.configuration.Configurator.add_view`
+    """
     try:
         return (request.headers['Upgrade'] == 'WebSocket') and \
                (request.headers['Connection'] == 'Upgrade')
@@ -45,7 +54,7 @@ class WebSocketView(object):
     def handle_websocket(self, websocket):
         """Handles the connection after setup and after the socket is closed
 
-        Hands off to :meth:`handle` until the socket is closed and then
+        Hands off to :meth:`handler` until the socket is closed and then
         ensures a correct :class:`webob.Response` is returned
         """
         try:
@@ -63,8 +72,9 @@ class WebSocketView(object):
         """Completes the upgrade request sent by the browser
 
         Sends the headers required to set up to websocket connection back to
-        the browser and then hands off to :meth:`handle_websocket`. See:
-        http://en.wikipedia.org/wiki/Web_Sockets#WebSocket_Protocol_Handshake
+        the browser and then hands off to :meth:`handle_websocket`.
+
+        See [websocket_protocol]_
         """
         if not (self.environ.get('HTTP_CONNECTION') == 'Upgrade' and
         self.environ.get('HTTP_UPGRADE') == 'WebSocket'):

@@ -41,6 +41,8 @@ persistent connection directly to the same objects that serve your HTML.
 Documentation
 =============
 
+.. note:: Still under construction
+
 Documentation is maintained at http://boothead.github.com/rpz.websocket
 
 References
