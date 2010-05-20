@@ -1,3 +1,12 @@
 # Sphinx inventory version 1
 # Project: rpz.websocket
 # Version: 0.5
+rpz.websocket mod api.html
+rpz.websocket.factory mod api.html
+rpz.websocket.factory.server_factory function api.html
+rpz.websocket.WebSocketView class api.html
+rpz.websocket.IncorrectlyConfigured exception api.html
+rpz.websocket.WebSocketView.handle_websocket method api.html
+rpz.websocket.WebSocketView.handler method api.html
+rpz.websocket.WebSocketView.handle_upgrade method api.html
+rpz.websocket.is_websocket function api.html

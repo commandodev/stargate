@@ -1,0 +1,195 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Modules &mdash; rpz.websocket v0.5 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '0.5',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="rpz.websocket v0.5 documentation" href="index.html" />
+    <link rel="prev" title="Welcome to rpz.websocket’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to rpz.websocket’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">rpz.websocket v0.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="modules">
+<h1>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="module-rpz.websocket">
+<h2><tt class="xref docutils literal"><span class="pre">rpz.websocket</span></tt><a class="headerlink" href="#module-rpz.websocket" title="Permalink to this headline">¶</a></h2>
+<p>WebSocket support for repoze is implemented as a view which handles the
+upgrade request and which can be subclassed to provide send and recieve
+functionalitly</p>
+<dl class="exception">
+<dt id="rpz.websocket.IncorrectlyConfigured">
+<em class="property">exception </em><tt class="descclassname">rpz.websocket.</tt><tt class="descname">IncorrectlyConfigured</tt><a class="headerlink" href="#rpz.websocket.IncorrectlyConfigured" title="Permalink to this definition">¶</a></dt>
+<dd>Exception to use in place of an assertion error</dd></dl>
+
+<dl class="class">
+<dt id="rpz.websocket.WebSocketView">
+<em class="property">class </em><tt class="descclassname">rpz.websocket.</tt><tt class="descname">WebSocketView</tt><big>(</big><em>request</em><big>)</big><a class="headerlink" href="#rpz.websocket.WebSocketView" title="Permalink to this definition">¶</a></dt>
+<dd><p>A view for handling websockets</p>
+<p>This view handles both the upgrade request and the ongoing socket
+communiction.</p>
+<dl class="method">
+<dt id="rpz.websocket.WebSocketView.handle_upgrade">
+<tt class="descname">handle_upgrade</tt><big>(</big><big>)</big><a class="headerlink" href="#rpz.websocket.WebSocketView.handle_upgrade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Completes the upgrade request sent by the browser</p>
+<p>Sends the headers required to set up to websocket connection back to
+the browser and then hands off to <a title="rpz.websocket.WebSocketView.handle_websocket" class="reference internal" href="#rpz.websocket.WebSocketView.handle_websocket"><tt class="xref docutils literal"><span class="pre">handle_websocket()</span></tt></a>.</p>
+<p>See <a class="reference internal" href="#websocket-protocol">[websocket_protocol]</a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpz.websocket.WebSocketView.handle_websocket">
+<tt class="descname">handle_websocket</tt><big>(</big><em>websocket</em><big>)</big><a class="headerlink" href="#rpz.websocket.WebSocketView.handle_websocket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles the connection after setup and after the socket is closed</p>
+<p>Hands off to <a title="rpz.websocket.WebSocketView.handler" class="reference internal" href="#rpz.websocket.WebSocketView.handler"><tt class="xref docutils literal"><span class="pre">handler()</span></tt></a> until the socket is closed and then
+ensures a correct <a title="(in WebOb v0.9)" class="reference external" href="http://pythonpaste.org/webob/modules/webob.html#webob.Response"><tt class="xref docutils literal"><span class="pre">webob.Response</span></tt></a> is returned</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="rpz.websocket.WebSocketView.handler">
+<tt class="descname">handler</tt><big>(</big><em>websocket</em><big>)</big><a class="headerlink" href="#rpz.websocket.WebSocketView.handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles the interaction with the websocket after being set up</p>
+<p>This is the method to override in subclasses to receive and send
+messages over the websocket connection</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="function">
+<dt id="rpz.websocket.is_websocket">
+<tt class="descclassname">rpz.websocket.</tt><tt class="descname">is_websocket</tt><big>(</big><em>context</em>, <em>request</em><big>)</big><a class="headerlink" href="#rpz.websocket.is_websocket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Custom predicate to denote a websocket handshake</p>
+<p>See <a class="reference internal" href="#predicate-arguments">[predicate_arguments]</a>
+and the <tt class="docutils literal"><span class="pre">custom_predicate</span></tt> key word argument to
+<a title="(in The repoze.bfg Web Application Framework v1.3a3)" class="reference external" href="http://docs.repoze.org/bfg/1.3/api/configuration.html#repoze.bfg.configuration.Configurator.add_view"><tt class="xref docutils literal"><span class="pre">repoze.bfg.configuration.Configurator.add_view()</span></tt></a></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-rpz.websocket.factory">
+<h2><tt class="xref docutils literal"><span class="pre">rpz.websocket.factory</span></tt><a class="headerlink" href="#module-rpz.websocket.factory" title="Permalink to this headline">¶</a></h2>
+<p>This module provides a paste <a class="reference internal" href="#server-factory">[server_factory]</a> to run repoze.bfg inside an
+eventlet wsgi server</p>
+<p>See <a class="reference external" href="http://pythonpaste.org/deploy/#paste-server-factory">Paste Deploy</a>
+for more details.</p>
+<dl class="function">
+<dt id="rpz.websocket.factory.server_factory">
+<tt class="descclassname">rpz.websocket.factory.</tt><tt class="descname">server_factory</tt><big>(</big><em>global_conf</em>, <em>host</em>, <em>port</em><big>)</big><a class="headerlink" href="#rpz.websocket.factory.server_factory" title="Permalink to this definition">¶</a></dt>
+<dd>Implements the <a class="reference internal" href="#server-factory">[server_factory]</a> api to provide an eventlet wsgi server</dd></dl>
+
+<p class="rubric">References</p>
+<table class="docutils citation" frame="void" id="server-factory" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[server_factory]</td><td><em>(<a class="fn-backref" href="#id3">1</a>, <a class="fn-backref" href="#id4">2</a>)</em> <a class="reference external" href="http://pythonpaste.org/deploy/#paste-server-factory">http://pythonpaste.org/deploy/#paste-server-factory</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="websocket-protocol" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[websocket_protocol]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Web_Sockets#WebSocket_Protocol_Handshake">http://en.wikipedia.org/wiki/Web_Sockets#WebSocket_Protocol_Handshake</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="predicate-arguments" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id2">[predicate_arguments]</a></td><td><a class="reference external" href="http://docs.repoze.org/bfg/1.3/narr/views.html#predicate-arguments">http://docs.repoze.org/bfg/1.3/narr/views.html#predicate-arguments</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">Modules</a><ul>
+<li><a class="reference external" href="#module-rpz.websocket"><tt class="docutils literal"><span class="pre">rpz.websocket</span></tt></a></li>
+<li><a class="reference external" href="#module-rpz.websocket.factory"><tt class="docutils literal"><span class="pre">rpz.websocket.factory</span></tt></a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="index.html"
+                                  title="previous chapter">Welcome to rpz.websocket&#8217;s documentation!</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="sources/api.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to rpz.websocket’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">rpz.websocket v0.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Ben Ford.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.5.
+    </div>
+  </body>
+</html>
