@@ -6,7 +6,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
     <title>Welcome to rpz.websocket’s documentation! &mdash; rpz.websocket v0.5 documentation</title>
-    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/repoze.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
@@ -20,7 +20,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="rpz.websocket v0.5 documentation" href="#" />
-    <link rel="next" title="Modules" href="api.html" /> 
+    <link rel="next" title="What are WebSockets?" href="websockets.html" /> 
   </head>
   <body>
     <div class="related">
@@ -33,7 +33,7 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api.html" title="Modules"
+          <a href="websockets.html" title="What are WebSockets?"
              accesskey="N">next</a> |</li>
         <li><a href="#">rpz.websocket v0.5 documentation</a> &raquo;</li> 
       </ul>
@@ -46,85 +46,29 @@
             
   <div class="section" id="welcome-to-rpz-websocket-s-documentation">
 <h1>Welcome to rpz.websocket&#8217;s documentation!<a class="headerlink" href="#welcome-to-rpz-websocket-s-documentation" title="Permalink to this headline">¶</a></h1>
+<p>rpz.websocket is a package for adding <a class="reference external" href="websockets.html#websockets">[WebSockets]</a> support to
+repoze.bfg applications using the excellent <a class="reference external" href="http://eventlet.net/doc/">eventlet</a>
+library to handle long running connections inside a non blocking WSGI server.</p>
+<div class="section" id="advantages">
+<h2>Advantages<a class="headerlink" href="#advantages" title="Permalink to this headline">¶</a></h2>
+<p>Most existing implementations of a WebSocket capable server run stand alone from
+your web app, usually on a different port or host. <tt class="docutils literal"><span class="pre">rpz.websocket</span></tt> allows you
+to connect persistent connection directly to the same objects that comprise your
+application. The advantages of this approach will become apparent in the examples
+section.</p>
 <p>Contents:</p>
 <ul>
+<li class="toctree-l1"><a class="reference external" href="websockets.html">What are WebSockets?</a><ul>
+<li class="toctree-l2"><a class="reference external" href="websockets.html#how-do-they-work">How do they work?</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference external" href="examples.html">Examples</a></li>
 <li class="toctree-l1"><a class="reference external" href="api.html">Modules</a><ul>
 <li class="toctree-l2"><a class="reference external" href="api.html#module-rpz.websocket"><tt class="docutils literal"><span class="pre">rpz.websocket</span></tt></a></li>
 <li class="toctree-l2"><a class="reference external" href="api.html#module-rpz.websocket.factory"><tt class="docutils literal"><span class="pre">rpz.websocket.factory</span></tt></a></li>
 </ul>
 </li>
 </ul>
-</div>
-<div class="section" id="what-about-the-server-side">
-<h1>What about the server side?<a class="headerlink" href="#what-about-the-server-side" title="Permalink to this headline">¶</a></h1>
-<p>On the server side things are slightly more complex. The server must:</p>
-<blockquote>
-<ul class="simple">
-<li>Perform a handshake with the client</li>
-<li>Keep hold of the persistent connection</li>
-<li>Receive messages from the client</li>
-<li>Route messages to the client</li>
-</ul>
-</blockquote>
-<div class="section" id="handshake">
-<h2>Handshake<a class="headerlink" href="#handshake" title="Permalink to this headline">¶</a></h2>
-<p>From the browser:</p>
-<div class="highlight-python"><pre>GET /demo HTTP/1.1
-Host: example.com
-Connection: Upgrade
-Sec-WebSocket-Key2: 12998 5 Y3 1  .P00
-Sec-WebSocket-Protocol: sample
-Upgrade: WebSocket
-Sec-WebSocket-Key1: 4 @1  46546xW%0l 1 5
-Origin: http://example.com
-
-^n:ds[4U</pre>
-</div>
-<p>The server would send back:</p>
-<div class="highlight-python"><pre>HTTP/1.1 101 WebSocket Protocol Handshake
-Upgrade: WebSocket
-Connection: Upgrade
-Sec-WebSocket-Origin: http://example.com
-Sec-WebSocket-Location: ws://example.com/demo
-Sec-WebSocket-Protocol: sample
-
-8jKS'y:G*Co,Wxa-</pre>
-</div>
-<p>The <tt class="docutils literal"><span class="pre">Sec-*</span></tt> headers can be ignored for now (these are only the very latest
-draft of the websocket <a class="reference internal" href="#spec">spec</a>. They will be implemented in a later version of
-rpz.websocket. So the headers that matter right now are:</p>
-<p>Client:</p>
-<div class="highlight-python"><pre>GET /demo HTTP/1.1
-Host: example.com
-Connection: Upgrade
-Upgrade: WebSocket
-Origin: http://example.com</pre>
-</div>
-<p>Server:</p>
-<div class="highlight-python"><pre>HTTP/1.1 101 WebSocket Protocol Handshake
-Upgrade: WebSocket
-Connection: Upgrade
-WebSocket-Origin: http://example.com
-WebSocket-Location: ws://example.com/demo</pre>
-</div>
-</div>
-<div class="section" id="connection">
-<h2>Connection<a class="headerlink" href="#connection" title="Permalink to this headline">¶</a></h2>
-<p>Once the handshake has been successfully negotiated there is a persistent bi-directional
-websocket connection from the client to the server. This is a pretty thin wrapper
-around a socket that sends text messages packed in the <tt class="docutils literal"><span class="pre">\x00</span></tt> and <tt class="docutils literal"><span class="pre">\xFF</span></tt> bytes.</p>
-<table class="docutils citation" frame="void" id="websockets" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label">[WebSockets]</td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Web_Sockets">http://en.wikipedia.org/wiki/Web_Sockets</a></td></tr>
-</tbody>
-</table>
-<table class="docutils citation" frame="void" id="spec" rules="none">
-<colgroup><col class="label" /><col /></colgroup>
-<tbody valign="top">
-<tr><td class="label">[spec]</td><td><a class="reference external" href="http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76">http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76</a></td></tr>
-</tbody>
-</table>
 </div>
 </div>
 <div class="section" id="indices-and-tables">
@@ -142,22 +86,23 @@ around a socket that sends text messages packed in the <tt class="docutils liter
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="#">
+              <img class="logo" src="static/logo_hi.png" alt="Logo"/>
+            </a></p>
             <h3><a href="#">Table Of Contents</a></h3>
             <ul>
 <li><a class="reference external" href="#">Welcome to rpz.websocket&#8217;s documentation!</a><ul>
+<li><a class="reference external" href="#advantages">Advantages</a><ul>
 </ul>
 </li>
-<li><a class="reference external" href="#what-about-the-server-side">What about the server side?</a><ul>
-<li><a class="reference external" href="#handshake">Handshake</a></li>
-<li><a class="reference external" href="#connection">Connection</a></li>
 </ul>
 </li>
 <li><a class="reference external" href="#indices-and-tables">Indices and tables</a></li>
 </ul>
 
             <h4>Next topic</h4>
-            <p class="topless"><a href="api.html"
-                                  title="next chapter">Modules</a></p>
+            <p class="topless"><a href="websockets.html"
+                                  title="next chapter">What are WebSockets?</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="sources/index.txt"
@@ -190,7 +135,7 @@ around a socket that sends text messages packed in the <tt class="docutils liter
           <a href="modindex.html" title="Global Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="api.html" title="Modules"
+          <a href="websockets.html" title="What are WebSockets?"
              >next</a> |</li>
         <li><a href="#">rpz.websocket v0.5 documentation</a> &raquo;</li> 
       </ul>

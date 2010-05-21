@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>What are WebSockets? &mdash; rpz.websocket v0.5 documentation</title>
+    <link rel="stylesheet" href="static/repoze.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '#',
+        VERSION:     '0.5',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="rpz.websocket v0.5 documentation" href="index.html" />
+    <link rel="next" title="Modules" href="api.html" />
+    <link rel="prev" title="Welcome to rpz.websocket’s documentation!" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="Modules"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to rpz.websocket’s documentation!"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">rpz.websocket v0.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="what-are-websockets">
+<span id="websocket-ref"></span><h1>What are WebSockets?<a class="headerlink" href="#what-are-websockets" title="Permalink to this headline">¶</a></h1>
+<p>From <a class="reference external" href="http://en.wikipedia.org/wiki/Web_Sockets">wikipedia</a>:</p>
+<div class="highlight-python"><pre>WebSockets is a technology providing for bi-directional, full-duplex
+communications channels, over a single TCP socket</pre>
+</div>
+<p>The WebSocket protocol provides a persistent low latency, low complexity way to
+achieve two way communication from the browser to server.</p>
+<p>From a client point of view using WebSocket is very simple:</p>
+<div class="highlight-javascript"><div class="highlight"><pre><span class="kd">var</span> <span class="nx">ws</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">WebSocket</span><span class="p">(</span><span class="s1">&#39;ws://somehost/some/url&#39;</span><span class="p">);</span>
+<span class="nx">ws</span><span class="p">.</span><span class="nx">onopen</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">){</span>
+    <span class="c1">//do some cool setup</span>
+<span class="p">}</span>
+<span class="nx">ws</span><span class="p">.</span><span class="nx">onmessage</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">){</span>
+    <span class="c1">//do something cool</span>
+<span class="p">}</span>
+<span class="nx">ws</span><span class="p">.</span><span class="nx">onclose</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">msg</span><span class="p">){</span>
+    <span class="c1">//do some clean up... stay cool</span>
+<span class="p">}</span>
+
+<span class="c1">// later:</span>
+<span class="nx">ws</span><span class="p">.</span><span class="nx">send</span><span class="p">(</span><span class="s1">&#39;How cool am I?!&#39;</span><span class="p">);</span>
+</pre></div>
+</div>
+<p>That&#8217;s pretty much all there is to it.</p>
+<div class="section" id="how-do-they-work">
+<h2>How do they work?<a class="headerlink" href="#how-do-they-work" title="Permalink to this headline">¶</a></h2>
+<p>The socket connection that WebSocket uses is negotiated with an HTTP request/response
+between the client and the server</p>
+<p>On the server side things are slightly more complex. The server must:</p>
+<blockquote>
+<ul class="simple">
+<li>Perform a handshake with the client</li>
+<li>Keep hold of the persistent connection</li>
+<li>Receive messages from the client</li>
+<li>Route messages to the client</li>
+</ul>
+</blockquote>
+<div class="section" id="handshake">
+<h3>Handshake<a class="headerlink" href="#handshake" title="Permalink to this headline">¶</a></h3>
+<p>From the browser:</p>
+<div class="highlight-python"><pre>GET /demo HTTP/1.1
+Host: example.com
+Connection: Upgrade
+Sec-WebSocket-Key2: 12998 5 Y3 1  .P00
+Sec-WebSocket-Protocol: sample
+Upgrade: WebSocket
+Sec-WebSocket-Key1: 4 @1  46546xW%0l 1 5
+Origin: http://example.com
+
+^n:ds[4U</pre>
+</div>
+<p>The server would send back:</p>
+<div class="highlight-python"><pre>HTTP/1.1 101 WebSocket Protocol Handshake
+Upgrade: WebSocket
+Connection: Upgrade
+Sec-WebSocket-Origin: http://example.com
+Sec-WebSocket-Location: ws://example.com/demo
+Sec-WebSocket-Protocol: sample
+
+8jKS'y:G*Co,Wxa-</pre>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">Sec-*</span></tt> headers can be ignored for now (these are only the very latest
+draft of the websocket <a class="reference internal" href="#spec">[spec]</a>. They will be implemented in a later version of
+rpz.websocket. So the headers that matter right now are:</p>
+<p>Client:</p>
+<div class="highlight-python"><pre>GET /demo HTTP/1.1
+Host: example.com
+Connection: Upgrade
+Upgrade: WebSocket
+Origin: http://example.com</pre>
+</div>
+<p>Server:</p>
+<div class="highlight-python"><pre>HTTP/1.1 101 WebSocket Protocol Handshake
+Upgrade: WebSocket
+Connection: Upgrade
+WebSocket-Origin: http://example.com
+WebSocket-Location: ws://example.com/demo</pre>
+</div>
+</div>
+<div class="section" id="connection">
+<h3>Connection<a class="headerlink" href="#connection" title="Permalink to this headline">¶</a></h3>
+<p>Once the handshake has been successfully negotiated there is a persistent bi-directional
+websocket connection from the client to the server. This is a pretty thin wrapper
+around a socket that sends text messages packed in the <tt class="docutils literal"><span class="pre">\x00</span></tt> and <tt class="docutils literal"><span class="pre">\xFF</span></tt> bytes.</p>
+<table class="docutils citation" frame="void" id="websockets" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label">[WebSockets]</td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Web_Sockets">http://en.wikipedia.org/wiki/Web_Sockets</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="spec" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[spec]</a></td><td><a class="reference external" href="http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76">http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76</a></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <p class="logo"><a href="index.html">
+              <img class="logo" src="static/logo_hi.png" alt="Logo"/>
+            </a></p>
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="#">What are WebSockets?</a><ul>
+<li><a class="reference external" href="#how-do-they-work">How do they work?</a><ul>
+<li><a class="reference external" href="#handshake">Handshake</a></li>
+<li><a class="reference external" href="#connection">Connection</a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="index.html"
+                                  title="previous chapter">Welcome to rpz.websocket&#8217;s documentation!</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="api.html"
+                                  title="next chapter">Modules</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="sources/websockets.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="Modules"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="Welcome to rpz.websocket’s documentation!"
+             >previous</a> |</li>
+        <li><a href="index.html">rpz.websocket v0.5 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2010, Ben Ford.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.5.
+    </div>
+  </body>
+</html>
