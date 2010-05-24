@@ -14,6 +14,11 @@ Modules
 .. automodule:: rpz.websocket.factory
     :members:
 
+:mod:`rpz.websocket.handshake`
+------------------------------
+
+.. automodule:: rpz.websocket.handshake
+    :members:
 
 .. rubric:: References
 

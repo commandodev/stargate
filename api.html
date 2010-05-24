@@ -20,7 +20,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="rpz.websocket v0.5 documentation" href="index.html" />
-    <link rel="prev" title="What are WebSockets?" href="websockets.html" /> 
+    <link rel="prev" title="Examples" href="examples.html" /> 
   </head>
   <body>
     <div class="related">
@@ -33,7 +33,7 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="websockets.html" title="What are WebSockets?"
+          <a href="examples.html" title="Examples"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">rpz.websocket v0.5 documentation</a> &raquo;</li> 
       </ul>
@@ -69,6 +69,14 @@ communiction.</p>
 <p>Sends the headers required to set up to websocket connection back to
 the browser and then hands off to <a title="rpz.websocket.WebSocketView.handle_websocket" class="reference internal" href="#rpz.websocket.WebSocketView.handle_websocket"><tt class="xref docutils literal"><span class="pre">handle_websocket()</span></tt></a>.</p>
 <p>See <a class="reference internal" href="#websocket-protocol">[websocket_protocol]</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref docutils literal"><span class="pre">webob.exc.HTTPBadRequest</span></tt> if handshake fails</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -77,6 +85,14 @@ the browser and then hands off to <a title="rpz.websocket.WebSocketView.handle_w
 <dd><p>Handles the connection after setup and after the socket is closed</p>
 <p>Hands off to <a title="rpz.websocket.WebSocketView.handler" class="reference internal" href="#rpz.websocket.WebSocketView.handler"><tt class="xref docutils literal"><span class="pre">handler()</span></tt></a> until the socket is closed and then
 ensures a correct <a title="(in WebOb v0.9)" class="reference external" href="http://pythonpaste.org/webob/modules/webob.html#webob.Response"><tt class="xref docutils literal"><span class="pre">webob.Response</span></tt></a> is returned</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameter:</th><td class="field-body"><em>websocket</em> &#8211; A <tt class="xref docutils literal"><span class="pre">WebSocket</span></tt></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 <dl class="method">
@@ -85,6 +101,14 @@ ensures a correct <a title="(in WebOb v0.9)" class="reference external" href="ht
 <dd><p>Handles the interaction with the websocket after being set up</p>
 <p>This is the method to override in subclasses to receive and send
 messages over the websocket connection</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameter:</th><td class="field-body"><em>websocket</em> &#8211; A <tt class="xref docutils literal"><span class="pre">WebSocket</span></tt></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -109,6 +133,103 @@ for more details.</p>
 <dt id="rpz.websocket.factory.server_factory">
 <tt class="descclassname">rpz.websocket.factory.</tt><tt class="descname">server_factory</tt><big>(</big><em>global_conf</em>, <em>host</em>, <em>port</em><big>)</big><a class="headerlink" href="#rpz.websocket.factory.server_factory" title="Permalink to this definition">¶</a></dt>
 <dd>Implements the <a class="reference internal" href="#server-factory">[server_factory]</a> api to provide an eventlet wsgi server</dd></dl>
+
+</div>
+<div class="section" id="module-rpz.websocket.handshake">
+<h2><tt class="xref docutils literal"><span class="pre">rpz.websocket.handshake</span></tt><a class="headerlink" href="#module-rpz.websocket.handshake" title="Permalink to this headline">¶</a></h2>
+<p>The handshake module contains implementations of different websocket spec
+versions&#8217; handshakes.</p>
+<p>The WebSocket spec had a major revision at version 76 <a class="reference external" href="websockets.html#ws76">[ws76]</a>  on May 6th 2010. This
+module is an attempt to insulate downstream application programmers from those
+changes</p>
+<dl class="exception">
+<dt id="rpz.websocket.handshake.HandShakeFailed">
+<em class="property">exception </em><tt class="descclassname">rpz.websocket.handshake.</tt><tt class="descname">HandShakeFailed</tt><a class="headerlink" href="#rpz.websocket.handshake.HandShakeFailed" title="Permalink to this definition">¶</a></dt>
+<dd>Raised when the handshake fails</dd></dl>
+
+<dl class="exception">
+<dt id="rpz.websocket.handshake.InvalidOrigin">
+<em class="property">exception </em><tt class="descclassname">rpz.websocket.handshake.</tt><tt class="descname">InvalidOrigin</tt><a class="headerlink" href="#rpz.websocket.handshake.InvalidOrigin" title="Permalink to this definition">¶</a></dt>
+<dd>Raised when the websocket request doesn&#8217;t have a valid origin</dd></dl>
+
+<dl class="function">
+<dt id="rpz.websocket.handshake.handshake_pre76">
+<tt class="descclassname">rpz.websocket.handshake.</tt><tt class="descname">handshake_pre76</tt><big>(</big><em>headers</em>, <em>base_response</em>, <em>path</em><big>)</big><a class="headerlink" href="#rpz.websocket.handshake.handshake_pre76" title="Permalink to this definition">¶</a></dt>
+<dd><p>The websocket handshake as described in version 75 of the spec <a class="reference external" href="websockets.html#ws75">[ws75]</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><em>headers</em> &#8211; The request headers from <a title="rpz.websocket.handshake.websocket_handshake" class="reference internal" href="#rpz.websocket.handshake.websocket_handshake"><tt class="xref docutils literal"><span class="pre">websocket_handshake()</span></tt></a></li>
+<li><em>base_response</em> &#8211; The headers common accross different spec versions</li>
+<li><em>path</em> &#8211; The full url path to this resource</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="docutils literal"><span class="pre">base_response</span></tt> and <tt class="docutils literal"><span class="pre">path</span></tt> are provided by
+<a title="rpz.websocket.handshake.websocket_handshake" class="reference internal" href="#rpz.websocket.handshake.websocket_handshake"><tt class="xref docutils literal"><span class="pre">websocket_handshake()</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="rpz.websocket.handshake.handshake_v76">
+<tt class="descclassname">rpz.websocket.handshake.</tt><tt class="descname">handshake_v76</tt><big>(</big><em>headers</em>, <em>base_response</em>, <em>path</em><big>)</big><a class="headerlink" href="#rpz.websocket.handshake.handshake_v76" title="Permalink to this definition">¶</a></dt>
+<dd><p>The websocket handshake as described in version 76 of the spec <a class="reference external" href="websockets.html#ws76">[ws76]</a></p>
+<div class="admonition warning">
+<p class="first admonition-title">Warning</p>
+<p class="last">Not implemented yet</p>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><em>headers</em> &#8211; The request headers from <a title="rpz.websocket.handshake.websocket_handshake" class="reference internal" href="#rpz.websocket.handshake.websocket_handshake"><tt class="xref docutils literal"><span class="pre">websocket_handshake()</span></tt></a></li>
+<li><em>base_response</em> &#8211; The headers common accross different spec versions</li>
+<li><em>path</em> &#8211; The full url path to this resource</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last"><tt class="docutils literal"><span class="pre">base_response</span></tt> and <tt class="docutils literal"><span class="pre">path</span></tt> are provided by
+<a title="rpz.websocket.handshake.websocket_handshake" class="reference internal" href="#rpz.websocket.handshake.websocket_handshake"><tt class="xref docutils literal"><span class="pre">websocket_handshake()</span></tt></a></p>
+</div>
+</dd></dl>
+
+<dl class="function">
+<dt id="rpz.websocket.handshake.websocket_handshake">
+<tt class="descclassname">rpz.websocket.handshake.</tt><tt class="descname">websocket_handshake</tt><big>(</big><em>headers</em>, <em>path</em>, <em>allowed_origins=None</em><big>)</big><a class="headerlink" href="#rpz.websocket.handshake.websocket_handshake" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform the websocket handshake</p>
+<p>This function does the part of the handshake that is common accross spec
+versions and then hands off to the spec specific implementations.</p>
+<p>See: <a title="rpz.websocket.handshake.handshake_pre76" class="reference internal" href="#rpz.websocket.handshake.handshake_pre76"><tt class="xref docutils literal"><span class="pre">handshake_pre76()</span></tt></a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><em>headers</em> (A dict like object - e.g. headers from <a title="(in WebOb v0.9)" class="reference external" href="http://pythonpaste.org/webob/modules/webob.html#webob.Request"><tt class="xref docutils literal"><span class="pre">webob.Request</span></tt></a>) &#8211; The websocket upgrade request headers</li>
+<li><em>path</em> &#8211; The full url path to this resource</li>
+</ul>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Raises:</th><td class="field-body"><p class="first"><a title="rpz.websocket.handshake.HandShakeFailed" class="reference internal" href="#rpz.websocket.handshake.HandShakeFailed"><tt class="xref docutils literal"><span class="pre">HandShakeFailed</span></tt></a>, <a title="rpz.websocket.handshake.InvalidOrigin" class="reference internal" href="#rpz.websocket.handshake.InvalidOrigin"><tt class="xref docutils literal"><span class="pre">InvalidOrigin</span></tt></a></p>
+</td>
+</tr>
+<tr class="field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">A string to send back to the client</p>
+</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
 
 <p class="rubric">References</p>
 <table class="docutils citation" frame="void" id="server-factory" rules="none">
@@ -146,13 +267,14 @@ for more details.</p>
 <li><a class="reference external" href="#">Modules</a><ul>
 <li><a class="reference external" href="#module-rpz.websocket"><tt class="docutils literal"><span class="pre">rpz.websocket</span></tt></a></li>
 <li><a class="reference external" href="#module-rpz.websocket.factory"><tt class="docutils literal"><span class="pre">rpz.websocket.factory</span></tt></a></li>
+<li><a class="reference external" href="#module-rpz.websocket.handshake"><tt class="docutils literal"><span class="pre">rpz.websocket.handshake</span></tt></a></li>
 </ul>
 </li>
 </ul>
 
             <h4>Previous topic</h4>
-            <p class="topless"><a href="websockets.html"
-                                  title="previous chapter">What are WebSockets?</a></p>
+            <p class="topless"><a href="examples.html"
+                                  title="previous chapter">Examples</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="sources/api.txt"
@@ -185,7 +307,7 @@ for more details.</p>
           <a href="modindex.html" title="Global Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="websockets.html" title="What are WebSockets?"
+          <a href="examples.html" title="Examples"
              >previous</a> |</li>
         <li><a href="index.html">rpz.websocket v0.5 documentation</a> &raquo;</li> 
       </ul>

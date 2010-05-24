@@ -20,7 +20,7 @@
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
     <link rel="top" title="rpz.websocket v0.5 documentation" href="index.html" />
-    <link rel="next" title="Modules" href="api.html" />
+    <link rel="next" title="Examples" href="examples.html" />
     <link rel="prev" title="Welcome to rpz.websocket’s documentation!" href="index.html" /> 
   </head>
   <body>
@@ -34,7 +34,7 @@
           <a href="modindex.html" title="Global Module Index"
              accesskey="M">modules</a> |</li>
         <li class="right" >
-          <a href="api.html" title="Modules"
+          <a href="examples.html" title="Examples"
              accesskey="N">next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to rpz.websocket’s documentation!"
@@ -111,7 +111,7 @@ Sec-WebSocket-Protocol: sample
 8jKS'y:G*Co,Wxa-</pre>
 </div>
 <p>The <tt class="docutils literal"><span class="pre">Sec-*</span></tt> headers can be ignored for now (these are only the very latest
-draft of the websocket <a class="reference internal" href="#spec">[spec]</a>. They will be implemented in a later version of
+draft of the websocket <a class="reference internal" href="#ws76">[ws76]</a>. They will be implemented in a later version of
 rpz.websocket. So the headers that matter right now are:</p>
 <p>Client:</p>
 <div class="highlight-python"><pre>GET /demo HTTP/1.1
@@ -127,6 +127,8 @@ Connection: Upgrade
 WebSocket-Origin: http://example.com
 WebSocket-Location: ws://example.com/demo</pre>
 </div>
+<p>These headers refer to version 75 and previous <a class="reference internal" href="#ws75">[ws75]</a> of the spec</p>
+<p>The implementation of the handshake can be found in <a title="" class="reference external" href="api.html#module-rpz.websocket.handshake"><tt class="xref docutils literal"><span class="pre">rpz.websocket.handshake</span></tt></a></p>
 </div>
 <div class="section" id="connection">
 <h3>Connection<a class="headerlink" href="#connection" title="Permalink to this headline">¶</a></h3>
@@ -139,10 +141,16 @@ around a socket that sends text messages packed in the <tt class="docutils liter
 <tr><td class="label">[WebSockets]</td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Web_Sockets">http://en.wikipedia.org/wiki/Web_Sockets</a></td></tr>
 </tbody>
 </table>
-<table class="docutils citation" frame="void" id="spec" rules="none">
+<table class="docutils citation" frame="void" id="ws75" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[spec]</a></td><td><a class="reference external" href="http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76">http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id2">[ws75]</a></td><td><a class="reference external" href="http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-75">http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-75</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="ws76" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[ws76]</a></td><td><a class="reference external" href="http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76">http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76</a></td></tr>
 </tbody>
 </table>
 </div>
@@ -174,8 +182,8 @@ around a socket that sends text messages packed in the <tt class="docutils liter
             <p class="topless"><a href="index.html"
                                   title="previous chapter">Welcome to rpz.websocket&#8217;s documentation!</a></p>
             <h4>Next topic</h4>
-            <p class="topless"><a href="api.html"
-                                  title="next chapter">Modules</a></p>
+            <p class="topless"><a href="examples.html"
+                                  title="next chapter">Examples</a></p>
             <h3>This Page</h3>
             <ul class="this-page-menu">
               <li><a href="sources/websockets.txt"
@@ -208,7 +216,7 @@ around a socket that sends text messages packed in the <tt class="docutils liter
           <a href="modindex.html" title="Global Module Index"
              >modules</a> |</li>
         <li class="right" >
-          <a href="api.html" title="Modules"
+          <a href="examples.html" title="Examples"
              >next</a> |</li>
         <li class="right" >
           <a href="index.html" title="Welcome to rpz.websocket’s documentation!"
