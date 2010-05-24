@@ -4,12 +4,15 @@ functionalitly
 """
 
 import errno
+import sys
 from eventlet import wsgi
 from eventlet.support import get_errno
 from eventlet.green import socket
 from eventlet.websocket import WebSocket
 from webob import Response
 from webob.exc import HTTPBadRequest
+
+from rpz.websocket.handshake import websocket_handshake, HandShakeFailed
 
 class IncorrectlyConfigured(Exception):
     """Exception to use in place of an assertion error"""
@@ -48,6 +51,8 @@ class WebSocketView(object):
 
         This is the method to override in subclasses to receive and send
         messages over the websocket connection
+
+        :param websocket: A :class:`WebSocket <eventlet.websocket.Websocket>`
         """
         raise NotImplementedError
 
@@ -56,6 +61,8 @@ class WebSocketView(object):
 
         Hands off to :meth:`handler` until the socket is closed and then
         ensures a correct :class:`webob.Response` is returned
+
+        :param websocket: A :class:`WebSocket <eventlet.websocket.Websocket>`
         """
         try:
             self.handler(websocket)
@@ -75,21 +82,18 @@ class WebSocketView(object):
         the browser and then hands off to :meth:`handle_websocket`.
 
         See [websocket_protocol]_
+
+        :returns: :exc:`webob.exc.HTTPBadRequest` if handshake fails
         """
-        if not (self.environ.get('HTTP_CONNECTION') == 'Upgrade' and
-        self.environ.get('HTTP_UPGRADE') == 'WebSocket'):
+        try:
+            handshake_reply = websocket_handshake(self.request.headers,
+                                                  self.request.path_info)
+        except HandShakeFailed:
+            _, val, _ = sys.exc_info()
             response = HTTPBadRequest(headers=dict(Connection='Close'))
-            response.body = 'Incorrect headers for WebSocket request:\n %s' % \
-                            self.request.headers
+            response.body = 'Upgrade negotiation failed:\n\t%s\n%s' % \
+                            (val, self.request.headers)
             return response
         sock = self.environ['eventlet.input'].get_socket()
-        handshake_reply = ("HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
-        "Upgrade: WebSocket\r\n"
-        "Connection: Upgrade\r\n"
-        "WebSocket-Origin: %s\r\n"
-        "WebSocket-Location: ws://%s%s\r\n\r\n" % (
-        self.request.host_url,
-        self.request.host, self.request.path_info))
         sock.sendall(handshake_reply)
-        websocket = WebSocket(self.sock, self.environ)
-        return self.handle_websocket(websocket)
+        return self.handle_websocket(WebSocket(self.sock, self.environ))

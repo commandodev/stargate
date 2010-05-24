@@ -73,7 +73,7 @@ The server would send back::
     8jKS'y:G*Co,Wxa-
 
 The ``Sec-*`` headers can be ignored for now (these are only the very latest
-draft of the websocket [spec]_. They will be implemented in a later version of
+draft of the websocket [ws76]_. They will be implemented in a later version of
 rpz.websocket. So the headers that matter right now are:
 
 Client::
@@ -92,6 +92,9 @@ Server::
     WebSocket-Origin: http://example.com
     WebSocket-Location: ws://example.com/demo
 
+These headers refer to version 75 and previous [ws75]_ of the spec
+
+The implementation of the handshake can be found in :mod:`rpz.websocket.handshake`
 
 Connection
 ----------
@@ -104,4 +107,6 @@ around a socket that sends text messages packed in the ``\x00`` and ``\xFF`` byt
 
 
 .. [WebSockets] http://en.wikipedia.org/wiki/Web_Sockets
-.. [spec] http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76
+.. [ws75] http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-75
+.. [ws76] http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76
+

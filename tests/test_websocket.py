@@ -253,7 +253,7 @@ class LimitedTestCase(TestCase):
 
         self.assertEqual(resp.status, 400)
         self.assertEqual(resp.getheader('connection'), 'Close')
-        self.assert_(resp.read().startswith('Incorrect headers for WebSocket request:'))
+        self.assert_(resp.read().startswith('Upgrade negotiation failed:'))
 
     def test_correct_upgrade_request(self):
         connect = [
