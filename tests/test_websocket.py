@@ -1,24 +1,15 @@
 import eventlet
-from eventlet import debug, hubs, Timeout, spawn_n, greenthread, wsgi, patcher
+from eventlet import debug, hubs, greenthread, wsgi
 from eventlet.green import urllib2, httplib
-from eventlet.websocket import WebSocket
 from nose.tools import ok_, eq_, set_trace, raises
-from paste import deploy
-from repoze.bfg.events import NewRequest
 from repoze.bfg.exceptions import NotFound
-from repoze.bfg.interfaces import IRequest
-from repoze.bfg.configuration import Configurator
-from repoze.bfg.threadlocal import get_current_request, get_current_registry
 from repoze.bfg import testing
 from StringIO import StringIO
-from zope.event import notify
-from zope.interface import implements
 from unittest import TestCase
 from webob.exc import HTTPNotFound
 from rpz.websocket.factory import server_factory
 from rpz.websocket import WebSocketView, is_websocket
 
-#from repoze.debug.responselogger import ResponseLoggingMiddleware
 from logging import getLogger
 
 import logging
@@ -98,7 +89,8 @@ class Fixture(object):
         Sets self.port to the port of the server, and self.killer is the greenlet
         running it.
 
-        Kills any previously-running server."""
+        Kills any previously-running server.
+        """
         if self.killer:
             greenthread.kill(self.killer)
             eventlet.sleep(0)
@@ -113,19 +105,16 @@ class Fixture(object):
         self.killer = eventlet.spawn_n(wsgi.server, sock, app, **new_kwargs)
 
     def tearDown(self, module):
-#        self.timer.cancel()
         greenthread.kill(self.killer)
         eventlet.sleep(0)
         if self.timer:
             self.timer.cancel()
-            #greenthread.kill(self.timer)
         try:
             hub = hubs.get_hub()
             num_readers = len(hub.get_readers())
             num_writers = len(hub.get_writers())
             assert num_readers == num_writers == 0
-        except AssertionError, e:
-#            set_trace()
+        except AssertionError:
             print "ERROR: Hub not empty"
             print debug.format_hub_timers()
             print debug.format_hub_listeners()
@@ -151,77 +140,17 @@ class LimitedTestCase(TestCase):
         self.set_timeout(self.TEST_TIMEOUT)
 
     def tearDown(self):
-#        self.timer.cancel()
         eventlet.sleep(0)
         if self.timer:
             self.timer.cancel()
-            #greenthread.kill(self.timer)
 
-#    def setUp(self):
-#        self.timer = None
-#        config = testing.setUp()
-#        config._set_root_factory(get_root)
-#        config_logger = getLogger("config")
-#        config_logger.setLevel(logging.INFO)
-#        config.add_route('echo', '/echo', EchoWebsocket)
-#        config.add_route('range', '/range', RangeWebsocket)
-#        config.add_view(name='traversal_echo', context=Root,
-#                        view=EchoWebsocket, custom_predicates=[is_websocket])
-#        # Add a not found view as setup_registry won't have been called
-#        config.add_view(view=not_found, context=NotFound)
-#        config.end()
-#        self.config = config
-#        self.logfile = StringIO()
-#        self.killer = None
-#        self.spawn_server()
-#        eventlet.sleep(0.5)
-#        self.set_timeout(self.TEST_TIMEOUT)
-#
+
     def set_timeout(self, new_timeout):
         """Changes the timeout duration; only has effect during one test case"""
         if self.timer:
             self.timer.cancel()
         self.timer = eventlet.Timeout(new_timeout,
                                       TestIsTakingTooLong(new_timeout))
-#
-#    def spawn_server(self, **kwargs):
-#        """Spawns a new wsgi server with the given arguments.
-#        Sets self.port to the port of the server, and self.killer is the greenlet
-#        running it.
-#
-#        Kills any previously-running server."""
-#        if self.killer:
-#            greenthread.kill(self.killer)
-#            eventlet.sleep(0)
-#        app = self.config.make_wsgi_app()
-#        new_kwargs = dict(max_size=128,
-#                          log=self.logfile)
-#        new_kwargs.update(kwargs)
-#
-#        sock = eventlet.listen(('localhost', 0))
-#
-#        self.port = sock.getsockname()[1]
-#        self.killer = eventlet.spawn_n(wsgi.server, sock, app, **new_kwargs)
-#
-#    def tearDown(self):
-##        self.timer.cancel()
-#        greenthread.kill(self.killer)
-#        eventlet.sleep(0)
-#        if self.timer:
-#            self.timer.cancel()
-#            #greenthread.kill(self.timer)
-#        try:
-#            hub = hubs.get_hub()
-#            num_readers = len(hub.get_readers())
-#            num_writers = len(hub.get_writers())
-#            assert num_readers == num_writers == 0
-#        except AssertionError, e:
-##            set_trace()
-#            print "ERROR: Hub not empty"
-#            print debug.format_hub_timers()
-#            print debug.format_hub_listeners()
-#
-#        eventlet.sleep(0)
 
     @raises(urllib2.HTTPError)
     def test_incorrect_headers(self):
