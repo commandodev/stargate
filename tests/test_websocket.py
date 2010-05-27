@@ -1,20 +1,9 @@
 import eventlet
-from eventlet import debug, hubs, greenthread, wsgi
 from eventlet.green import urllib2, httplib
 from nose.tools import ok_, eq_, set_trace, raises
-from repoze.bfg.exceptions import NotFound
-from repoze.bfg import testing
-from StringIO import StringIO
 from unittest import TestCase
-from webob.exc import HTTPNotFound
-from rpz.websocket.factory import server_factory
+from rpz.websocket.test_utils import Fixture, Root
 from rpz.websocket import WebSocketView, is_websocket
-
-from logging import getLogger
-
-import logging
-import mock
-import random
 
 
 class EchoWebsocket(WebSocketView):
@@ -26,7 +15,6 @@ class EchoWebsocket(WebSocketView):
     def handler(self, ws):
         while True:
             m = ws.wait()
-#            import ipdb; ipdb.set_trace()
             if m is None:
                 break
             ws.send('%s says %s' % (ws.origin, m))
@@ -42,84 +30,6 @@ class RangeWebsocket(WebSocketView):
             ws.send("msg %d" % i)
             eventlet.sleep(0.1)
 
-serve = server_factory({}, 'localhost', 6544)
-
-class Root(object):
-    pass
-
-def get_root(request):
-    return Root()
-
-def not_found(context, request):
-    assert(isinstance(context, NotFound))
-    return HTTPNotFound('404')
-
-##### Borrowed from the eventlet tests package
-
-class Fixture(object):
-
-    def setUp(self, module):
-        config = testing.setUp()
-        config._set_root_factory(get_root)
-        config_logger = getLogger("config")
-        config_logger.setLevel(logging.INFO)
-        config.add_route('echo', '/echo', EchoWebsocket)
-        config.add_route('range', '/range', RangeWebsocket)
-        config.add_view(name='traversal_echo', context=Root,
-                        view=EchoWebsocket, custom_predicates=[is_websocket])
-        # Add a not found view as setup_registry won't have been called
-        config.add_view(view=not_found, context=NotFound)
-        config.end()
-        self.config = config
-        self.logfile = StringIO()
-        self.killer = None
-        self.spawn_server()
-        eventlet.sleep(0.3)
-
-
-    def set_timeout(self, new_timeout):
-        """Changes the timeout duration; only has effect during one test case"""
-        if self.timer:
-            self.timer.cancel()
-        self.timer = eventlet.Timeout(new_timeout,
-                                      TestIsTakingTooLong(new_timeout))
-
-    def spawn_server(self, **kwargs):
-        """Spawns a new wsgi server with the given arguments.
-        Sets self.port to the port of the server, and self.killer is the greenlet
-        running it.
-
-        Kills any previously-running server.
-        """
-        if self.killer:
-            greenthread.kill(self.killer)
-            eventlet.sleep(0)
-        app = self.config.make_wsgi_app()
-        new_kwargs = dict(max_size=128,
-                          log=self.logfile)
-        new_kwargs.update(kwargs)
-
-        sock = eventlet.listen(('localhost', 0))
-
-        self.port = sock.getsockname()[1]
-        self.killer = eventlet.spawn_n(wsgi.server, sock, app, **new_kwargs)
-
-    def tearDown(self, module):
-        greenthread.kill(self.killer)
-        eventlet.sleep(0)
-        if self.timer:
-            self.timer.cancel()
-        try:
-            hub = hubs.get_hub()
-            num_readers = len(hub.get_readers())
-            num_writers = len(hub.get_writers())
-            assert num_readers == num_writers == 0
-        except AssertionError:
-            print "ERROR: Hub not empty"
-            print debug.format_hub_timers()
-            print debug.format_hub_listeners()
-
-        eventlet.sleep(0)
 
 class TestIsTakingTooLong(Exception):
     """ Custom exception class to be raised when a test's runtime exceeds a limit. """
@@ -132,7 +42,6 @@ class LimitedTestCase(TestCase):
     quantity."""
 
     TEST_TIMEOUT = 2
-    SERVE = server_factory({}, 'localhost', 6544)
 
     def setUp(self):
         self.timer = None
@@ -305,7 +214,11 @@ class LimitedTestCase(TestCase):
         fd.flush()
         sock.close()
 
-fixture = Fixture()
-setup_module = fixture.setUp
-teardown_modulw = fixture.tearDown
+fixture = Fixture(routes=[('echo', '/echo', dict(view=EchoWebsocket)),
+                          ('range', '/range', dict(view=RangeWebsocket))],
+                  views=[dict(name='traversal_echo', context=Root,
+                              view=EchoWebsocket,
+                              custom_predicates=[is_websocket])])
+setup_module = fixture.start_server
+teardown_modulw = fixture.clear_up
 
