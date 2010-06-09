@@ -10,12 +10,11 @@ import errno
 
 class ListenersDescriptor(object):
 
-    def __init__(self):
-        self._registered = set()
-
     def __get__(self, obj, klass=None):
         if obj:
-            return self._registered
+            if not hasattr(obj, '_registered'):
+                obj._registered = set()
+            return obj._registered
 
 
 class WebSocketAwareContext(object):

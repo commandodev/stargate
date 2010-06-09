@@ -30,7 +30,10 @@ class TestWebSocketAwareContext(TestCase):
 
         self.test_ws = WebSocket(s, env)
 
-    def test_context_has_listeners(self):
+#    def tearDown(self):
+#        pass
+
+    def test_context_has_listeners_property(self):
         eq_(self.ctx.listeners, set())
 
     def test_context_add_listeners(self):
@@ -46,6 +49,14 @@ class TestWebSocketAwareContext(TestCase):
         eq_(ctx.listeners, set([ws]))
         ctx.remove_listener(ws)
         eq_(ctx.listeners, set())
+
+    def test_context_add_2_listeners(self):
+        ws = self.test_ws
+        OTHER_WS = WebSocket(self.mock_socket, self.environ)
+        ctx = self.ctx
+        ctx.add_listener(ws)
+        ctx.add_listener(OTHER_WS)
+        eq_(len(ctx.listeners), 2)
 
     def test_context_send_to_ws(self):
         ctx = self.ctx
@@ -73,3 +84,4 @@ class TestWebSocketAwareContext(TestCase):
         ok_(ws.socket.sendall.called_with("\x00hello\xFF"))
         # The broken socket should have been removed
         eq_(ctx.listeners, set([ws]))
+
