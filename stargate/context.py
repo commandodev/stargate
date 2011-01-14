@@ -1,11 +1,11 @@
 """This module supplies a class which can be subclassed or mixed in and used in
-conjunction with :class:`~rpz.websocket.WebSocketView`. It provides
+conjunction with :class:`~stargate.WebSocketView`. It provides
 functionality for adding and removing views as listeners for events
 """
 
 from eventlet.green import socket
 from eventlet.support import get_errno
-from repoze.bfg.traversal import model_path
+from pyramid.traversal import model_path
 import errno
 
 class ListenersDescriptor(object):
@@ -33,7 +33,7 @@ class WebSocketAwareContext(object):
         return model_path(self)
 
     def add_listener(self, ws):
-        """Adds a :class:`mulitvisor.server.websocket.Websocket` the the set of listeners"""
+        """Adds a :class:`eventlet.websocket.Websocket` the the set of listeners"""
         self.listeners.add(ws)
 
     def remove_listener(self, ws):

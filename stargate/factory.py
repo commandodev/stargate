@@ -1,4 +1,4 @@
-"""This module provides a paste [server_factory]_ to run repoze.bfg inside an
+"""This module provides a paste [server_factory]_ to run pyramid inside an
 eventlet wsgi server
 
 See `Paste Deploy <http://pythonpaste.org/deploy/#paste-server-factory>`_

@@ -2,8 +2,8 @@ import eventlet
 from eventlet.green import urllib2, httplib
 from nose.tools import ok_, eq_, set_trace, raises
 from unittest import TestCase
-from rpz.websocket.test_utils import Fixture, Root
-from rpz.websocket import WebSocketView, is_websocket
+from stargate.test_utils import Fixture, Root
+from stargate import WebSocketView, is_websocket
 
 
 class EchoWebsocket(WebSocketView):

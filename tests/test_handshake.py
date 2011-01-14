@@ -1,5 +1,5 @@
 from nose.tools import assert_raises, eq_
-from rpz.websocket import handshake as hs
+from stargate import handshake as hs
 
 PATH = '/path'
 

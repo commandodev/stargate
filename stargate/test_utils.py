@@ -1,12 +1,12 @@
 import eventlet
 import logging
 from eventlet import Queue, greenthread, hubs, wsgi
-from repoze.bfg.exceptions import NotFound
-from repoze.bfg import testing
+from pyramid.exceptions import NotFound
+from pyramid import testing
 from StringIO import StringIO
 from webob.exc import HTTPNotFound
 
-from rpz.websocket import WebSocketView
+from stargate import WebSocketView
 
 class Root(object):
     pass

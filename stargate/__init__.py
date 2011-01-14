@@ -12,7 +12,7 @@ from eventlet.websocket import WebSocket
 from webob import Response
 from webob.exc import HTTPBadRequest
 
-from rpz.websocket.handshake import websocket_handshake, HandShakeFailed
+from stargate.handshake import websocket_handshake, HandShakeFailed
 
 class IncorrectlyConfigured(Exception):
     """Exception to use in place of an assertion error"""
