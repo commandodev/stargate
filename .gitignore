@@ -1,0 +1,9 @@
+.coverage
+.idea/
+cover/
+docs/
+stargate.egg-info/
+stargate/
+startgate.egg-info/
+tests/
+
