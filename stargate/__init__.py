@@ -52,7 +52,7 @@ class WebSocketView(object):
         This is the method to override in subclasses to receive and send
         messages over the websocket connection
 
-        :param websocket: A :class:`WebSocket <eventlet.websocket.Websocket>`
+        :param websocket: A :class:`WebSocket <eventlet.websocket.WebSocket>`
         """
         raise NotImplementedError
 

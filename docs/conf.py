@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 #
-# rpz.websocket documentation build configuration file, created by
+# stargate documentation build configuration file, created by
 # sphinx-quickstart on Wed May 19 05:44:16 2010.
 #
 # This file is execfile()d with the current directory set to its containing dir.
@@ -38,7 +38,7 @@ source_suffix = '.rst'
 master_doc = 'index'
 
 # General information about the project.
-project = u'rpz.websocket'
+project = u'stargate'
 copyright = u'2010, Ben Ford'
 
 # The version info for the project you're documenting, acts as replacement for
@@ -160,7 +160,7 @@ html_static_path = ['_static']
 #html_file_suffix = ''
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = 'rpzwebsocketdoc'
+htmlhelp_basename = 'stargatedoc'
 
 
 # -- Options for LaTeX output --------------------------------------------------
@@ -174,7 +174,7 @@ htmlhelp_basename = 'rpzwebsocketdoc'
 # Grouping the document tree into LaTeX files. List of tuples
 # (source start file, target name, title, author, documentclass [howto/manual]).
 latex_documents = [
-  ('index', 'rpzwebsocket.tex', u'rpz.websocket Documentation',
+  ('index', 'stargate.tex', u'stargate Documentation',
    u'Ben Ford', 'manual'),
 ]
 
@@ -199,7 +199,8 @@ latex_documents = [
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
     'http://docs.python.org/': None,
-    'http://docs.repoze.org/bfg/1.3/': None,
+    'http://docs.pylonsproject.org/projects/pyramid/dev/': None,
     'http://pythonpaste.org/webob/': None,
-    'http://pythonpaste.org/': None
+    'http://pythonpaste.org/': None,
+    'http://eventlet.net/doc/': None,
     }

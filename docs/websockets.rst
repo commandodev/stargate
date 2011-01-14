@@ -74,7 +74,7 @@ The server would send back::
 
 The ``Sec-*`` headers can be ignored for now (these are only the very latest
 draft of the websocket [ws76]_. They will be implemented in a later version of
-rpz.websocket. So the headers that matter right now are:
+stargate. So the headers that matter right now are:
 
 Client::
 
@@ -94,7 +94,7 @@ Server::
 
 These headers refer to version 75 and previous [ws75]_ of the spec
 
-The implementation of the handshake can be found in :mod:`rpz.websocket.handshake`
+The implementation of the handshake can be found in :mod:`stargate.handshake`
 
 Connection
 ----------

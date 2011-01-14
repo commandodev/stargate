@@ -19,7 +19,7 @@ BASE_RESPONSE = ("HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
 def websocket_handshake(headers, path, allowed_origins=None):
     """Perform the websocket handshake
 
-    This function does the part of the handshake that is common accross spec
+    This function does the part of the handshake that is common across spec
     versions and then hands off to the spec specific implementations.
 
     See: :func:`handshake_pre76`
@@ -73,7 +73,7 @@ def handshake_v76(headers, base_response, path):
     .. warning:: Not implemented yet
 
     :param headers: The request headers from :func:`websocket_handshake`
-    :param base_response: The headers common accross different spec versions
+    :param base_response: The headers common across different spec versions
     :param path: The full url path to this resource
 
     .. note:: ``base_response`` and ``path`` are provided by

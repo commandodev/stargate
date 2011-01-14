@@ -33,7 +33,7 @@ class WebSocketAwareContext(object):
         return model_path(self)
 
     def add_listener(self, ws):
-        """Adds a :class:`eventlet.websocket.Websocket` the the set of listeners"""
+        """Adds a :class:`eventlet.websocket.WebSocket` the the set of listeners"""
         self.listeners.add(ws)
 
     def remove_listener(self, ws):

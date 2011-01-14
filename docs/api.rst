@@ -2,22 +2,22 @@ Modules
 =======
 
 
-:mod:`rpz.websocket`
+:mod:`stargate`
 --------------------
 
-.. automodule:: rpz.websocket
+.. automodule:: stargate
     :members:
 
-:mod:`rpz.websocket.factory`
+:mod:`stargate.factory`
 ----------------------------
 
-.. automodule:: rpz.websocket.factory
+.. automodule:: stargate.factory
     :members:
 
-:mod:`rpz.websocket.handshake`
+:mod:`stargate.handshake`
 ------------------------------
 
-.. automodule:: rpz.websocket.handshake
+.. automodule:: stargate.handshake
     :members:
 
 .. rubric:: References
