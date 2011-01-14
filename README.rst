@@ -1,8 +1,8 @@
 Introduction
 ============
 
-rpz.websocket is a package for adding WebSockets_ support to
-repoze.bfg applications using the excellent eventlet library for long running
+Stargate is a package for adding WebSockets_ support to
+pyramid applications using the excellent eventlet library for long running
 connections
 
 What is a WebSocket?
@@ -43,7 +43,7 @@ Documentation
 
 .. note:: Still under construction
 
-Documentation is maintained at http://boothead.github.com/rpz.websocket
+Documentation is maintained at http://boothead.github.com/stargate
 
 References
 ==========
