@@ -7,7 +7,7 @@ changes
 """
 import string
 import struct
-from mercurial.keepalive import md5
+from hashlib import md5
 
 class HandShakeFailed(Exception):
     """Raised when the handshake fails"""
@@ -78,6 +78,7 @@ def handshake_pre76(headers, base_response, path):
                           "WebSocket-Location: %s\r\n\r\n" \
                                 % (headers['Origin'], build_location_url(headers)))
     except KeyError:
+        from nose.tools import set_trace; set_trace()
         raise HandShakeFailed("'Host' not in headers")
     return base_response
 
@@ -118,16 +119,11 @@ def handshake_v76(headers, base_response, path):
     key3 = headers.environ['wsgi.input'].read(8)
     key = struct.pack(">II", key1, key2) + key3
     response = md5(key).digest()
-    try:
-        base_response += ("Sec-WebSocket-Origin: %s\r\n"
-                          "Sec-WebSocket-Protocol: %s\r\n"
-                          "Sec-WebSocket-Location: %s\r\n"
-                          "\r\n%s" % (
-                                headers.get('Origin'),
-                                headers.get('Sec-WebSocket-Protocol', 'default'),
-                                build_location_url(headers),
-                                response))
-    except KeyError:
-        raise HandShakeFailed('WTF')
-    print base_response
-    return base_response
+    return  base_response + ("Sec-WebSocket-Origin: %s\r\n"
+                             "Sec-WebSocket-Protocol: %s\r\n"
+                             "Sec-WebSocket-Location: %s\r\n"
+                             "\r\n%s" % (
+                                    headers.get('Origin'),
+                                    headers.get('Sec-WebSocket-Protocol', 'default'),
+                                    build_location_url(headers),
+                                    response))
