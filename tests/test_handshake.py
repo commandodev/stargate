@@ -1,11 +1,15 @@
 from nose.tools import assert_raises, eq_
 from stargate import handshake as hs
+from webob.headers import EnvironHeaders
 
 PATH = '/path'
 
 CORRECT_PRE76_RESPONSE = hs.BASE_RESPONSE + ("WebSocket-Origin: http://localhost\r\n"
                                              "WebSocket-Location: ws://localhost%s\r\n\r\n") \
                                                 % PATH
+
+def make_environ_headers(headers):
+    return EnvironHeaders(dict([(k.replace('-', '_').upper(), v) for k, v in headers.items()]))
 
 def raises(headers, path):
     assert_raises(hs.HandShakeFailed, hs.websocket_handshake, headers, path)

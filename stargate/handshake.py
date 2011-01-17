@@ -5,6 +5,9 @@ The WebSocket spec had a major revision at version 76 [ws76]_  on May 6th 2010. 
 module is an attempt to insulate downstream application programmers from those
 changes
 """
+import string
+import struct
+from mercurial.keepalive import md5
 
 class HandShakeFailed(Exception):
     """Raised when the handshake fails"""
@@ -40,14 +43,25 @@ def websocket_handshake(headers, path, allowed_origins=None):
     if allowed_origins and origin not in allowed_origins:
         raise InvalidOrigin('Origin %s not allowed' % origin)
     # The following 3 lines are sent regardless of spec version
-    base_response = ("HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
-                     "Upgrade: WebSocket\r\n"
-                     "Connection: Upgrade\r\n")
-    if any([k.startswith('Sec-WebSocket') for k in headers]):
+    if any([k.startswith('Sec-Websocket') for k in headers]):
         return handshake_v76(headers, BASE_RESPONSE, path)
     return handshake_pre76(headers, BASE_RESPONSE, path)
     
-
+def build_location_url(headers):
+    environ = headers.environ
+    scheme = 'ws'
+    if environ.get('wsgi.url_scheme') == 'https':
+        scheme = 'wss'
+    location = '%s://%s%s%s' % (
+        scheme,
+        environ.get('HTTP_HOST'),
+        environ.get('SCRIPT_NAME'),
+        environ.get('PATH_INFO')
+    )
+    qs = environ.get('QUERY_STRING')
+    if qs:
+        location += '?' + qs
+    return location
 
 def handshake_pre76(headers, base_response, path):
     """The websocket handshake as described in version 75 of the spec [ws75]_
@@ -61,11 +75,26 @@ def handshake_pre76(headers, base_response, path):
     """
     try:
         base_response += ("WebSocket-Origin: %s\r\n"
-                          "WebSocket-Location: ws://%s%s\r\n\r\n" \
-                                % (headers['Origin'], headers['Host'], path))
+                          "WebSocket-Location: %s\r\n\r\n" \
+                                % (headers['Origin'], build_location_url(headers)))
     except KeyError:
         raise HandShakeFailed("'Host' not in headers")
     return base_response
+
+def _extract_number(value):
+        """
+        Utility function which, given a string like 'g98sd  5[]221@1', will
+        return 9852211. Used to parse the Sec-WebSocket-Key headers.
+        """
+        out = ""
+        spaces = 0
+        for char in value:
+            if char in string.digits:
+                out += char
+            elif char == " ":
+                spaces += 1
+        return int(out) / spaces
+
 
 def handshake_v76(headers, base_response, path):
     """The websocket handshake as described in version 76 of the spec [ws76]_ 
@@ -79,4 +108,26 @@ def handshake_v76(headers, base_response, path):
     .. note:: ``base_response`` and ``path`` are provided by
         :func:`websocket_handshake`
     """
-    raise NotImplementedError
+    #import pdb; pdb.set_trace()
+    #import pprint; pprint.pprint(headers)
+    key1 = _extract_number(headers['Sec-Websocket-Key1'])
+    key2 = _extract_number(headers['Sec-Websocket-Key2'])
+    # There's no content-length header in the request, but it has 8
+    # bytes of data.
+    headers.environ['wsgi.input'].content_length = 8
+    key3 = headers.environ['wsgi.input'].read(8)
+    key = struct.pack(">II", key1, key2) + key3
+    response = md5(key).digest()
+    try:
+        base_response += ("Sec-WebSocket-Origin: %s\r\n"
+                          "Sec-WebSocket-Protocol: %s\r\n"
+                          "Sec-WebSocket-Location: %s\r\n"
+                          "\r\n%s" % (
+                                headers.get('Origin'),
+                                headers.get('Sec-WebSocket-Protocol', 'default'),
+                                build_location_url(headers),
+                                response))
+    except KeyError:
+        raise HandShakeFailed('WTF')
+    print base_response
+    return base_response
