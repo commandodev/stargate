@@ -86,8 +86,7 @@ class WebSocketView(object):
         :returns: :exc:`webob.exc.HTTPBadRequest` if handshake fails
         """
         try:
-            handshake_reply = websocket_handshake(self.request.headers,
-                                                  self.request.path_info)
+            handshake_reply = websocket_handshake(self.request.headers)
         except HandShakeFailed:
             _, val, _ = sys.exc_info()
             response = HTTPBadRequest(headers=dict(Connection='Close'))

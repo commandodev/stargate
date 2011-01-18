@@ -19,7 +19,7 @@ BASE_RESPONSE = ("HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
                  "Upgrade: WebSocket\r\n"
                  "Connection: Upgrade\r\n")
 
-def websocket_handshake(headers, path, allowed_origins=None):
+def websocket_handshake(headers, allowed_origins=None):
     """Perform the websocket handshake
 
     This function does the part of the handshake that is common across spec
@@ -44,8 +44,8 @@ def websocket_handshake(headers, path, allowed_origins=None):
         raise InvalidOrigin('Origin %s not allowed' % origin)
     # The following 3 lines are sent regardless of spec version
     if any([k.startswith('Sec-Websocket') for k in headers]):
-        return handshake_v76(headers, BASE_RESPONSE, path)
-    return handshake_pre76(headers, BASE_RESPONSE, path)
+        return handshake_v76(headers, BASE_RESPONSE)
+    return handshake_pre76(headers, BASE_RESPONSE)
     
 def build_location_url(headers):
     environ = headers.environ
@@ -63,7 +63,7 @@ def build_location_url(headers):
         location += '?' + qs
     return location
 
-def handshake_pre76(headers, base_response, path):
+def handshake_pre76(headers, base_response):
     """The websocket handshake as described in version 75 of the spec [ws75]_
 
     :param headers: The request headers from :func:`websocket_handshake`
@@ -97,10 +97,8 @@ def _extract_number(value):
         return int(out) / spaces
 
 
-def handshake_v76(headers, base_response, path):
-    """The websocket handshake as described in version 76 of the spec [ws76]_ 
-
-    .. warning:: Not implemented yet
+def handshake_v76(headers, base_response):
+    """The websocket handshake as described in version 76 of the spec [ws76]_
 
     :param headers: The request headers from :func:`websocket_handshake`
     :param base_response: The headers common across different spec versions
