@@ -4,6 +4,7 @@
 .installed.cfg
 bin
 deps
+dist
 eggs
 develop-eggs
 parts
