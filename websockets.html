@@ -1,15 +1,17 @@
 
-
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
 
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>What are WebSockets? &mdash; stargate v0.5 documentation</title>
-    <link rel="stylesheet" href="_static/repoze.css" type="text/css" />
+    <title>What are WebSockets? &mdash; stargate 0.5 documentation</title>
+    
+    <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
@@ -22,11 +24,25 @@
     <script type="text/javascript" src="_static/jquery.js"></script>
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
-    <link rel="top" title="stargate v0.5 documentation" href="index.html" />
+    <link rel="top" title="stargate 0.5 documentation" href="index.html" />
     <link rel="next" title="Examples" href="examples.html" />
-    <link rel="prev" title="Welcome to stargate’s documentation!" href="index.html" /> 
+    <link rel="prev" title="Welcome to stargate’s documentation!" href="index.html" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
+<!--[if lte IE 6]>
+<link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
+<![endif]-->
+
   </head>
   <body>
+<div class="header">
+  <div class="logo">
+    <a href="index.html">
+      <img class="logo" src="_static/pyramid_logo.png" alt="Logo"/>
+    </a>
+  </div>
+</div>
+
     <div class="related">
       <h3>Navigation</h3>
       <ul>
@@ -42,7 +58,7 @@
         <li class="right" >
           <a href="index.html" title="Welcome to stargate’s documentation!"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">stargate v0.5 documentation</a> &raquo;</li> 
+        <li><a href="index.html">stargate 0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -82,15 +98,19 @@ achieve two way communication from the browser to server.</p>
 between the client and the server</p>
 <p>On the server side things are slightly more complex. The server must:</p>
 <blockquote>
-<ul class="simple">
+<div><ul class="simple">
 <li>Perform a handshake with the client</li>
 <li>Keep hold of the persistent connection</li>
 <li>Receive messages from the client</li>
 <li>Route messages to the client</li>
 </ul>
-</blockquote>
+</div></blockquote>
 <div class="section" id="handshake">
 <h3>Handshake<a class="headerlink" href="#handshake" title="Permalink to this headline">¶</a></h3>
+<p>The handshake version of the WebSocket protocol underwent a major revision at version 76 <a class="reference internal" href="#ws76">[ws76]</a>.
+As of version 0.2, Stargate supports both this and the older <a class="reference internal" href="#ws75">[ws75]</a>. Examples of both are below:</p>
+<div class="section" id="version-76">
+<h4>Version 76<a class="headerlink" href="#version-76" title="Permalink to this headline">¶</a></h4>
 <p>From the browser:</p>
 <div class="highlight-python"><pre>GET /demo HTTP/1.1
 Host: example.com
@@ -113,9 +133,9 @@ Sec-WebSocket-Protocol: sample
 
 8jKS'y:G*Co,Wxa-</pre>
 </div>
-<p>The <tt class="docutils literal"><span class="pre">Sec-*</span></tt> headers can be ignored for now (these are only the very latest
-draft of the websocket <a class="reference internal" href="#ws76">[ws76]</a>. They will be implemented in a later version of
-stargate. So the headers that matter right now are:</p>
+</div>
+<div class="section" id="version-75-and-older">
+<h4>Version 75 and older<a class="headerlink" href="#version-75-and-older" title="Permalink to this headline">¶</a></h4>
 <p>Client:</p>
 <div class="highlight-python"><pre>GET /demo HTTP/1.1
 Host: example.com
@@ -130,8 +150,8 @@ Connection: Upgrade
 WebSocket-Origin: http://example.com
 WebSocket-Location: ws://example.com/demo</pre>
 </div>
-<p>These headers refer to version 75 and previous <a class="reference internal" href="#ws75">[ws75]</a> of the spec</p>
 <p>The implementation of the handshake can be found in <a class="reference internal" href="api.html#module-stargate.handshake" title="stargate.handshake"><tt class="xref py py-mod docutils literal"><span class="pre">stargate.handshake</span></tt></a></p>
+</div>
 </div>
 <div class="section" id="connection">
 <h3>Connection<a class="headerlink" href="#connection" title="Permalink to this headline">¶</a></h3>
@@ -166,14 +186,15 @@ around a socket that sends text messages packed in the <tt class="docutils liter
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
-            <p class="logo"><a href="index.html">
-              <img class="logo" src="_static/logo_hi.png" alt="Logo"/>
-            </a></p>
   <h3><a href="index.html">Table Of Contents</a></h3>
   <ul>
 <li><a class="reference internal" href="#">What are WebSockets?</a><ul>
 <li><a class="reference internal" href="#how-do-they-work">How do they work?</a><ul>
-<li><a class="reference internal" href="#handshake">Handshake</a></li>
+<li><a class="reference internal" href="#handshake">Handshake</a><ul>
+<li><a class="reference internal" href="#version-76">Version 76</a></li>
+<li><a class="reference internal" href="#version-75-and-older">Version 75 and older</a></li>
+</ul>
+</li>
 <li><a class="reference internal" href="#connection">Connection</a></li>
 </ul>
 </li>
@@ -187,11 +208,6 @@ around a socket that sends text messages packed in the <tt class="docutils liter
   <h4>Next topic</h4>
   <p class="topless"><a href="examples.html"
                         title="next chapter">Examples</a></p>
-  <h3>This Page</h3>
-  <ul class="this-page-menu">
-    <li><a href="_sources/websockets.txt"
-           rel="nofollow">Show Source</a></li>
-  </ul>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -224,12 +240,12 @@ around a socket that sends text messages packed in the <tt class="docutils liter
         <li class="right" >
           <a href="index.html" title="Welcome to stargate’s documentation!"
              >previous</a> |</li>
-        <li><a href="index.html">stargate v0.5 documentation</a> &raquo;</li> 
+        <li><a href="index.html">stargate 0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
         &copy; Copyright 2010, Ben Ford.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.0.6.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 1.1pre.
     </div>
   </body>
 </html>
