@@ -1,6 +1,7 @@
 """This module supplies a class which can be subclassed or mixed in and used in
 conjunction with :class:`~stargate.WebSocketView`. It provides
-functionality for adding and removing views as listeners for events
+functionality for adding and removing
+:class:`websockets <eventlet.websocket.WebSocket>` as listeners for events
 """
 
 from eventlet.green import socket
@@ -17,8 +18,13 @@ class ListenersDescriptor(object):
             return obj._registered
 
 
-class WebSocketAwareContext(object):
+class WebSocketAwareResource(object):
+    """An object in a :term:`pyramid:traversal` graph that handles websockets
 
+    It is designed to be persistent and to route messages to attached clients
+    """
+
+    #: A set of attached :class:`websockets <eventlet.websocket.WebSocket>`
     listeners = ListenersDescriptor()
 
     __name__ = ''
@@ -41,6 +47,10 @@ class WebSocketAwareContext(object):
         self.listeners.discard(ws)
 
     def send(self, message):
+        """Sends ``message`` to all sockets in the set of :attr:`listeners`
+
+        It will clear up any websockets that are no longer connected
+        """
         remove = []
         for ws in self.listeners:
             try:

@@ -8,6 +8,12 @@ Modules
 .. automodule:: stargate
     :members:
 
+:mod:`stargate.resource`
+----------------------------
+
+.. automodule:: stargate.resource
+    :members:
+
 :mod:`stargate.factory`
 ----------------------------
 

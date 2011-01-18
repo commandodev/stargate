@@ -1,6 +1,8 @@
-"""WebSocket support for repoze is implemented as a view which handles the
-upgrade request and which can be subclassed to provide send and recieve
-functionalitly
+"""WebSocket support for pyramid is implemented as a :class:`view <WebSocketView>`
+which handles the upgrade request and a
+:class:`resource <stargate.resource.WebSocketAwareResource>` which manages the
+persistent connected clients. Both should be subclassed to provide send and receive
+functionality desired
 """
 
 import errno
@@ -57,10 +59,11 @@ class WebSocketView(object):
         raise NotImplementedError
 
     def handle_websocket(self, websocket):
-        """Handles the connection after setup and after the socket is closed
+        """Handles the connection after setup and handshake is done
 
         Hands off to :meth:`handler` until the socket is closed and then
-        ensures a correct :class:`webob.Response` is returned
+        ensures a correct :class:`webob.Response` is returned after the socket
+        is closed
 
         :param websocket: A :class:`WebSocket <eventlet.websocket.Websocket>`
         """

@@ -197,9 +197,10 @@ latex_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    'http://docs.python.org/': None,
-    'http://docs.pylonsproject.org/projects/pyramid/dev/': None,
-    'http://pythonpaste.org/webob/': None,
-    'http://pythonpaste.org/': None,
-    'http://eventlet.net/doc/': None,
+    'python' : ('http://docs.python.org/', None),
+    'pyramid' : ('http://docs.pylonsproject.org/projects/pyramid/dev/', None),
+    'webob' : ('http://pythonpaste.org/webob/', None),
+    'paste' : ('http://pythonpaste.org/', None),
+    'eventlet' : ('http://eventlet.net/doc/', None),
     }
+

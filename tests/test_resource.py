@@ -1,11 +1,11 @@
 from eventlet.green import socket
 from eventlet.websocket import WebSocket
 from nose.tools import *
-from stargate.context import WebSocketAwareContext
+from stargate.context import WebSocketAwareResource
 from unittest import TestCase
 import mock
 
-class Traverser(WebSocketAwareContext):
+class Traverser(WebSocketAwareResource):
 
     def __init__(self):
         self._router = dict()
@@ -23,7 +23,7 @@ class BrokenWebSocket(WebSocket):
 class TestWebSocketAwareContext(TestCase):
 
     def setUp(self):
-        self.ctx = WebSocketAwareContext()
+        self.ctx = WebSocketAwareResource()
         self.mock_socket = s = mock.Mock()
         self.environ = env = dict(HTTP_ORIGIN='http://localhost', HTTP_WEBSOCKET_PROTOCOL='ws',
                                   PATH_INFO='test')
