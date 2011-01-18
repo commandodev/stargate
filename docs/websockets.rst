@@ -48,6 +48,13 @@ On the server side things are slightly more complex. The server must:
 Handshake
 ---------
 
+The handshake version of the WebSocket protocol underwent a major revision at version 76 [ws76]_.
+As of version 0.2, Stargate supports both this and the older [ws75]_. Examples of both are below:
+
+
+Version 76
+~~~~~~~~~~
+
 From the browser::
 
     GET /demo HTTP/1.1
@@ -72,9 +79,9 @@ The server would send back::
 
     8jKS'y:G*Co,Wxa-
 
-The ``Sec-*`` headers can be ignored for now (these are only the very latest
-draft of the websocket [ws76]_. They will be implemented in a later version of
-stargate. So the headers that matter right now are:
+
+Version 75 and older
+~~~~~~~~~~~~~~~~~~~~
 
 Client::
 
@@ -92,7 +99,6 @@ Server::
     WebSocket-Origin: http://example.com
     WebSocket-Location: ws://example.com/demo
 
-These headers refer to version 75 and previous [ws75]_ of the spec
 
 The implementation of the handshake can be found in :mod:`stargate.handshake`
 

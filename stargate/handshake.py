@@ -28,8 +28,8 @@ def websocket_handshake(headers, allowed_origins=None):
     See: :func:`handshake_pre76`
 
     :param headers: The websocket upgrade request headers
-    :type headers: A dict like object - e.g. headers from :class:`webob.Request`
-    :param path: The full url path to this resource
+        (headers attribute from :class:`webob.Request`)
+    :type headers: :class:`webob.headers.EnvironHeaders`
     :raises: :exc:`HandShakeFailed`, :exc:`InvalidOrigin`
     :returns: A string to send back to the client
     """
@@ -48,6 +48,10 @@ def websocket_handshake(headers, allowed_origins=None):
     return handshake_pre76(headers, BASE_RESPONSE)
     
 def build_location_url(headers):
+    """Construct a websocket url for given headers
+
+    :param headers: :class:`webob.headers.EnvironHeaders`
+    """
     environ = headers.environ
     scheme = 'ws'
     if environ.get('wsgi.url_scheme') == 'https':
@@ -67,10 +71,9 @@ def handshake_pre76(headers, base_response):
     """The websocket handshake as described in version 75 of the spec [ws75]_
 
     :param headers: The request headers from :func:`websocket_handshake`
-    :param base_response: The headers common accross different spec versions
-    :param path: The full url path to this resource
+    :param base_response: The headers common across different spec versions
 
-    .. note:: ``base_response`` and ``path`` are provided by
+    .. note:: ``base_response`` is provided by
         :func:`websocket_handshake`
     """
     try:
@@ -83,18 +86,18 @@ def handshake_pre76(headers, base_response):
     return base_response
 
 def _extract_number(value):
-        """
-        Utility function which, given a string like 'g98sd  5[]221@1', will
-        return 9852211. Used to parse the Sec-WebSocket-Key headers.
-        """
-        out = ""
-        spaces = 0
-        for char in value:
-            if char in string.digits:
-                out += char
-            elif char == " ":
-                spaces += 1
-        return int(out) / spaces
+    """
+    Utility function which, given a string like 'g98sd  5[]221@1', will
+    return 9852211. Used to parse the Sec-WebSocket-Key headers.
+    """
+    out = ""
+    spaces = 0
+    for char in value:
+        if char in string.digits:
+            out += char
+        elif char == " ":
+            spaces += 1
+    return int(out) / spaces
 
 
 def handshake_v76(headers, base_response):
@@ -102,13 +105,10 @@ def handshake_v76(headers, base_response):
 
     :param headers: The request headers from :func:`websocket_handshake`
     :param base_response: The headers common across different spec versions
-    :param path: The full url path to this resource
 
-    .. note:: ``base_response`` and ``path`` are provided by
+    .. note:: ``base_response`` is provided by
         :func:`websocket_handshake`
     """
-    #import pdb; pdb.set_trace()
-    #import pprint; pprint.pprint(headers)
     key1 = _extract_number(headers['Sec-Websocket-Key1'])
     key2 = _extract_number(headers['Sec-Websocket-Key2'])
     # There's no content-length header in the request, but it has 8
