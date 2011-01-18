@@ -67,9 +67,11 @@
 <h1>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-stargate">
 <span id="stargate"></span><h2><a class="reference internal" href="#module-stargate" title="stargate"><tt class="xref py py-mod docutils literal"><span class="pre">stargate</span></tt></a><a class="headerlink" href="#module-stargate" title="Permalink to this headline">¶</a></h2>
-<p>WebSocket support for repoze is implemented as a view which handles the
-upgrade request and which can be subclassed to provide send and recieve
-functionalitly</p>
+<p>WebSocket support for pyramid is implemented as a <a class="reference internal" href="#stargate.WebSocketView" title="stargate.WebSocketView"><tt class="xref py py-class docutils literal"><span class="pre">view</span></tt></a>
+which handles the upgrade request and a
+<a class="reference internal" href="#stargate.resource.WebSocketAwareResource" title="stargate.resource.WebSocketAwareResource"><tt class="xref py py-class docutils literal"><span class="pre">resource</span></tt></a> which manages the
+persistent connected clients. Both should be subclassed to provide send and receive
+functionality desired</p>
 <dl class="exception">
 <dt id="stargate.IncorrectlyConfigured">
 <em class="property">exception </em><tt class="descclassname">stargate.</tt><tt class="descname">IncorrectlyConfigured</tt><a class="headerlink" href="#stargate.IncorrectlyConfigured" title="Permalink to this definition">¶</a></dt>
@@ -102,9 +104,10 @@ the browser and then hands off to <a class="reference internal" href="#stargate.
 <dl class="method">
 <dt id="stargate.WebSocketView.handle_websocket">
 <tt class="descname">handle_websocket</tt><big>(</big><em>websocket</em><big>)</big><a class="headerlink" href="#stargate.WebSocketView.handle_websocket" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handles the connection after setup and after the socket is closed</p>
+<dd><p>Handles the connection after setup and handshake is done</p>
 <p>Hands off to <a class="reference internal" href="#stargate.WebSocketView.handler" title="stargate.WebSocketView.handler"><tt class="xref py py-meth docutils literal"><span class="pre">handler()</span></tt></a> until the socket is closed and then
-ensures a correct <a class="reference external" href="http://pythonpaste.org/webob/modules/webob.html#webob.Response" title="(in WebOb v1.0)"><tt class="xref py py-class docutils literal"><span class="pre">webob.Response</span></tt></a> is returned</p>
+ensures a correct <a class="reference external" href="http://pythonpaste.org/webob/modules/webob.html#webob.Response" title="(in WebOb v1.0)"><tt class="xref py py-class docutils literal"><span class="pre">webob.Response</span></tt></a> is returned after the socket
+is closed</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -140,6 +143,45 @@ messages over the websocket connection</p>
 <p>See <a class="reference internal" href="#predicate-arguments">[predicate_arguments]</a>
 and the <tt class="docutils literal"><span class="pre">custom_predicate</span></tt> key word argument to
 <tt class="xref py py-meth docutils literal"><span class="pre">repoze.bfg.configuration.Configurator.add_view()</span></tt></p>
+</dd></dl>
+
+</div>
+<div class="section" id="module-stargate.resource">
+<span id="stargate-resource"></span><h2><a class="reference internal" href="#module-stargate.resource" title="stargate.resource"><tt class="xref py py-mod docutils literal"><span class="pre">stargate.resource</span></tt></a><a class="headerlink" href="#module-stargate.resource" title="Permalink to this headline">¶</a></h2>
+<p>This module supplies a class which can be subclassed or mixed in and used in
+conjunction with <a class="reference internal" href="#stargate.WebSocketView" title="stargate.WebSocketView"><tt class="xref py py-class docutils literal"><span class="pre">WebSocketView</span></tt></a>. It provides
+functionality for adding and removing
+<a class="reference external" href="http://eventlet.net/doc/modules/websocket.html#eventlet.websocket.WebSocket" title="(in Eventlet v0.9)"><tt class="xref py py-class docutils literal"><span class="pre">websockets</span></tt></a> as listeners for events</p>
+<dl class="class">
+<dt id="stargate.resource.WebSocketAwareResource">
+<em class="property">class </em><tt class="descclassname">stargate.resource.</tt><tt class="descname">WebSocketAwareResource</tt><a class="headerlink" href="#stargate.resource.WebSocketAwareResource" title="Permalink to this definition">¶</a></dt>
+<dd><p>An object in a <a class="reference external" href="http://docs.pylonsproject.org/projects/pyramid/dev/glossary.html#term-traversal" title="(in The Pyramid Web Application Development Framework v1.0a9)"><em>traversal</em></a> graph that handles websockets</p>
+<p>It is designed to be persistent and to route messages to attached clients</p>
+<dl class="method">
+<dt id="stargate.resource.WebSocketAwareResource.add_listener">
+<tt class="descname">add_listener</tt><big>(</big><em>ws</em><big>)</big><a class="headerlink" href="#stargate.resource.WebSocketAwareResource.add_listener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Adds a <a class="reference external" href="http://eventlet.net/doc/modules/websocket.html#eventlet.websocket.WebSocket" title="(in Eventlet v0.9)"><tt class="xref py py-class docutils literal"><span class="pre">eventlet.websocket.WebSocket</span></tt></a> the the set of listeners</p>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="stargate.resource.WebSocketAwareResource.listeners">
+<tt class="descname">listeners</tt><em class="property"> = None</em><a class="headerlink" href="#stargate.resource.WebSocketAwareResource.listeners" title="Permalink to this definition">¶</a></dt>
+<dd><p>A set of attached <a class="reference external" href="http://eventlet.net/doc/modules/websocket.html#eventlet.websocket.WebSocket" title="(in Eventlet v0.9)"><tt class="xref py py-class docutils literal"><span class="pre">websockets</span></tt></a></p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stargate.resource.WebSocketAwareResource.remove_listener">
+<tt class="descname">remove_listener</tt><big>(</big><em>ws</em><big>)</big><a class="headerlink" href="#stargate.resource.WebSocketAwareResource.remove_listener" title="Permalink to this definition">¶</a></dt>
+<dd><p>Removes ws from the set of listeners</p>
+</dd></dl>
+
+<dl class="method">
+<dt id="stargate.resource.WebSocketAwareResource.send">
+<tt class="descname">send</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#stargate.resource.WebSocketAwareResource.send" title="Permalink to this definition">¶</a></dt>
+<dd><p>Sends <tt class="docutils literal"><span class="pre">message</span></tt> to all sockets in the set of <a class="reference internal" href="#stargate.resource.WebSocketAwareResource.listeners" title="stargate.resource.WebSocketAwareResource.listeners"><tt class="xref py py-attr docutils literal"><span class="pre">listeners</span></tt></a></p>
+<p>It will clear up any websockets that are no longer connected</p>
+</dd></dl>
+
 </dd></dl>
 
 </div>
@@ -289,6 +331,7 @@ versions and then hands off to the spec specific implementations.</p>
   <ul>
 <li><a class="reference internal" href="#">Modules</a><ul>
 <li><a class="reference internal" href="#module-stargate"><tt class="docutils literal"><span class="pre">stargate</span></tt></a></li>
+<li><a class="reference internal" href="#module-stargate.resource"><tt class="docutils literal"><span class="pre">stargate.resource</span></tt></a></li>
 <li><a class="reference internal" href="#module-stargate.factory"><tt class="docutils literal"><span class="pre">stargate.factory</span></tt></a></li>
 <li><a class="reference internal" href="#module-stargate.handshake"><tt class="docutils literal"><span class="pre">stargate.handshake</span></tt></a></li>
 </ul>
