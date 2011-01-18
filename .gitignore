@@ -6,4 +6,5 @@ stargate.egg-info/
 stargate/
 startgate.egg-info/
 tests/
-
+dist
+_*
