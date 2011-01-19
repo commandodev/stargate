@@ -1,7 +1,7 @@
 from eventlet.green import socket
 from eventlet.websocket import WebSocket
 from nose.tools import *
-from stargate.context import WebSocketAwareResource
+from stargate.resource import WebSocketAwareResource
 from unittest import TestCase
 import mock
 

@@ -6,7 +6,7 @@ functionality for adding and removing
 
 from eventlet.green import socket
 from eventlet.support import get_errno
-from pyramid.traversal import model_path
+from pyramid.traversal import resource_path
 import errno
 
 class ListenersDescriptor(object):
@@ -36,7 +36,7 @@ class WebSocketAwareResource(object):
 
     @property
     def path(self):
-        return model_path(self)
+        return resource_path(self)
 
     def add_listener(self, ws):
         """Adds a :class:`eventlet.websocket.WebSocket` the the set of listeners"""
