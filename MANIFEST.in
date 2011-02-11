@@ -1,0 +1,17 @@
+include README.rst
+include setup.cfg
+include setup.py
+include setupegg.py
+
+recursive-include docs *
+recursive-exclude docs _build
+# graft docs
+graft stargate
+
+
+# exclude docs/_static
+# exclude docs/_templates
+
+global-exclude *.so
+global-exclude *.pyc
+global-exclude .git*

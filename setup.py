@@ -23,8 +23,14 @@ setup(name='stargate',
       install_requires=[
           'setuptools',
           'pyramid',
-          'eventlet'
+          'pyramid_zcml',
+          'eventlet',
           # -*- Extra requirements: -*-
+      ],
+      test_suite='nose.collector',
+      tests_require=[
+        'nose',
+        'mock',
       ],
       entry_points = {
       'paste.server_factory': ['eventlet_server = stargate.factory:server_factory'],
