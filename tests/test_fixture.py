@@ -12,4 +12,4 @@ class TestMe(TestCase):
         testing.tearDown()
 
     def test_config(self):
-        self.assertTrue(self.config.settings is None)
+        self.assertTrue(self.config.registry.settings is not None)
