@@ -1,6 +1,6 @@
 import eventlet
 from eventlet.green import urllib2, httplib
-from nose.tools import ok_, eq_, set_trace, raises
+from nose.tools import eq_, raises
 from unittest import TestCase
 from stargate.test_utils import Fixture, Root
 from stargate import WebSocketView, is_websocket

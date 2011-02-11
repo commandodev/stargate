@@ -1,7 +1,7 @@
 from eventlet.green import socket
 from eventlet.websocket import WebSocket
 from nose.tools import *
-from stargate.resource import WebSocketAwareResource
+from stargate import WebSocketAwareResource
 from unittest import TestCase
 import mock
 
@@ -29,9 +29,6 @@ class TestWebSocketAwareContext(TestCase):
                                   PATH_INFO='test')
 
         self.test_ws = WebSocket(s, env)
-
-#    def tearDown(self):
-#        pass
 
     def test_context_has_listeners_property(self):
         eq_(self.ctx.listeners, set())
