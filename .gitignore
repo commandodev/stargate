@@ -5,6 +5,8 @@
 bin
 deps
 dist
+build
+*.egg
 eggs
 develop-eggs
 parts
