@@ -1,5 +1,5 @@
 from eventlet.wsgi import Input
-from nose.tools import assert_raises, eq_, set_trace
+from nose.tools import assert_raises, eq_
 from stargate import handshake as hs
 from StringIO import StringIO
 from webob import Request
