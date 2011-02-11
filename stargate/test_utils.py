@@ -1,3 +1,4 @@
+import pyramid_zcml
 import eventlet
 import logging
 from eventlet import Queue, greenthread, hubs, wsgi
@@ -22,24 +23,27 @@ def not_found(context, request):
 class Fixture(object):
     """Use fixture to setup a server once for a module"""
 
-    def __init__(self, zcml_file=None, views=None, routes=None):
+    def __init__(self, zcml_file=None, root_factory=None, views=None, routes=None):
         """
         :param zcml_file: Path (or spec) of a zcml file
         :param views: List of dicts suitable as kwargs to
-            :meth:`repoze.bfg.configuration.Configurator.add_view`
+            :meth:`pyramid.configuration.Configurator.add_view`
         :param routes: List of tuples of (name, path, kwargs) to pass to
-            :meth:`repoze.bfg.configuration.Configurator.add_route`
+            :meth:`pyramid.configuration.Configurator.add_route`
         """
         self.zcml = zcml_file
-        self.views = views
-        self.routes = routes
+        self.root_factory = root_factory
+        self.views = views or []
+        self.routes = routes or []
+        self.config = testing.setUp()
 
-    def start_server(self, module):
-        config = testing.setUp()
-        config._set_root_factory(get_root)
+    def start_server(self, module=None):
+        config = self.config
+        config._set_root_factory(self.root_factory or get_root)
         config_logger = logging.getLogger("config")
         config_logger.setLevel(logging.INFO)
         if self.zcml:
+            config.include(pyramid_zcml)
             config.load_zcml(self.zcml)
         for name, path, kw in self.routes:
             config.add_route(name, path, **kw)
@@ -74,7 +78,7 @@ class Fixture(object):
         self.port = sock.getsockname()[1]
         self.killer = eventlet.spawn_n(wsgi.server, sock, app, **new_kwargs)
 
-    def clear_up(self, module):
+    def clear_up(self, module=None):
         greenthread.kill(self.killer)
         eventlet.sleep(0)
         try:
