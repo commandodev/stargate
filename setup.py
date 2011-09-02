@@ -25,6 +25,7 @@ setup(name='stargate',
           'pyramid',
           'pyramid_zcml',
           'eventlet',
+          'ws4py',
           # -*- Extra requirements: -*-
       ],
       test_suite='nose.collector',

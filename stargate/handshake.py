@@ -5,9 +5,11 @@ The WebSocket spec had a major revision at version 76 [ws76]_  on May 6th 2010. 
 module is an attempt to insulate downstream application programmers from those
 changes
 """
+import base64
 import string
 import struct
-from hashlib import md5
+
+from hashlib import md5, sha1
 
 class HandShakeFailed(Exception):
     """Raised when the handshake fails"""
@@ -18,6 +20,8 @@ class InvalidOrigin(Exception):
 BASE_RESPONSE = ("HTTP/1.1 101 Web Socket Protocol Handshake\r\n"
                  "Upgrade: WebSocket\r\n"
                  "Connection: Upgrade\r\n")
+
+WS_KEY = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11"
 
 def websocket_handshake(headers, allowed_origins=None):
     """Perform the websocket handshake
@@ -33,19 +37,23 @@ def websocket_handshake(headers, allowed_origins=None):
     :raises: :exc:`HandShakeFailed`, :exc:`InvalidOrigin`
     :returns: A string to send back to the client
     """
-    if not ((headers.get('Upgrade') == 'WebSocket')
+    #import pdb; pdb.set_trace()
+    upgrade = headers.get('Upgrade')
+    if not upgrade:
+        raise HandShakeFailed("No Upgrade header")
+    if not ((upgrade.lower() == 'websocket')
                 and
-            (headers.get('Connection') == 'Upgrade')
-                and
-            ('Origin' in headers)):
+            (headers.get('Connection') == 'Upgrade')):
         raise HandShakeFailed('Not valid upgrade headers: %s' % headers)
-    origin = headers['Origin']
+    origin = headers.get('Origin') or headers.get("Sec-WebSocket-Origin")
     if allowed_origins and origin not in allowed_origins:
         raise InvalidOrigin('Origin %s not allowed' % origin)
     # The following 3 lines are sent regardless of spec version
+    if upgrade == "websocket":
+        return 2, handshake_hybi_10(headers)
     if any([k.startswith('Sec-Websocket') for k in headers]):
-        return handshake_v76(headers, BASE_RESPONSE)
-    return handshake_pre76(headers, BASE_RESPONSE)
+        return 1, handshake_v76(headers, BASE_RESPONSE)
+    return 0, handshake_pre76(headers, BASE_RESPONSE)
     
 def build_location_url(headers):
     """Construct a websocket url for given headers
@@ -67,6 +75,19 @@ def build_location_url(headers):
         location += '?' + qs
     return location
 
+def handshake_hybi_10(headers):
+    BASE_RESPONSE = ("HTTP/1.1 101 Switching Protocols\r\n"
+                     "Upgrade: websocket\r\n"
+                     "Connection: Upgrade\r\n")
+    key = headers.get("Sec-WebSocket-Key")
+    if len(base64.b64decode(key)) != 16:
+        raise HandShakeFailed("Sec-Websocket-Key length invalid")
+    return BASE_RESPONSE + (
+        "Sec-WebSocket-Version: 8\r\n"
+        "Sec-WebSocket-Accept: %s\r\n"
+        "\r\n" % base64.b64encode(sha1(key + WS_KEY).digest())
+    )
+
 def handshake_pre76(headers, base_response):
     """The websocket handshake as described in version 75 of the spec [ws75]_
 
@@ -81,7 +102,7 @@ def handshake_pre76(headers, base_response):
                           "WebSocket-Location: %s\r\n\r\n" \
                                 % (headers['Origin'], build_location_url(headers)))
     except KeyError:
-        from nose.tools import set_trace; set_trace()
+        #from nose.tools import set_trace; set_trace()
         raise HandShakeFailed("'Host' not in headers")
     return base_response
 

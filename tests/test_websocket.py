@@ -64,7 +64,7 @@ class LimitedTestCase(TestCase):
     @raises(urllib2.HTTPError)
     def test_incorrect_headers(self):
         try:
-            urllib2.urlopen("http://localhost:%s/echo" % self.port)
+            urllib2.urlopen("http://127.0.0.1:%s/echo" % self.port)
         except urllib2.HTTPError, e:
             eq_(e.code, 400)
             raise
@@ -72,7 +72,7 @@ class LimitedTestCase(TestCase):
     @raises(urllib2.HTTPError)
     def test_traversal_view_lookup(self):
         try:
-            urllib2.urlopen("http://localhost:%s/traversal_echo" % self.port)
+            urllib2.urlopen("http://127.0.0.1:%s/traversal_echo" % self.port)
         except urllib2.HTTPError, e:
             eq_(e.code, 404)
             raise
@@ -81,11 +81,11 @@ class LimitedTestCase(TestCase):
         headers = dict(kv.split(': ') for kv in [
                 "Upgrade: WebSocket",
                 # NOTE: intentionally no connection header
-                "Host: localhost:%s" % self.port,
-                "Origin: http://localhost:%s" % self.port,
+                "Host: 127.0.0.1:%s" % self.port,
+                "Origin: http://127.0.0.1:%s" % self.port,
                 "WebSocket-Protocol: ws",
                 ])
-        http = httplib.HTTPConnection('localhost', self.port)
+        http = httplib.HTTPConnection('127.0.0.1', self.port)
         http.request("GET", "/echo", headers=headers)
         resp = http.getresponse()
 
@@ -98,12 +98,12 @@ class LimitedTestCase(TestCase):
                 "GET /echo HTTP/1.1",
                 "Upgrade: WebSocket",
                 "Connection: Upgrade",
-                "Host: localhost:%s" % self.port,
-                "Origin: http://localhost:%s" % self.port,
+                "Host: 127.0.0.1:%s" % self.port,
+                "Origin: http://127.0.0.1:%s" % self.port,
                 "WebSocket-Protocol: ws",
                 ]
         sock = eventlet.connect(
-            ('localhost', self.port))
+            ('127.0.0.1', self.port))
 
         fd = sock.makefile('rw', close=True)
         fd.write('\r\n'.join(connect) + '\r\n\r\n')
@@ -114,20 +114,20 @@ class LimitedTestCase(TestCase):
         eq_(result, '\r\n'.join(['HTTP/1.1 101 Web Socket Protocol Handshake',
                                  'Upgrade: WebSocket',
                                  'Connection: Upgrade',
-                                 'WebSocket-Origin: http://localhost:%s' % self.port,
-                                 'WebSocket-Location: ws://localhost:%s/echo\r\n\r\n' % self.port]))
+                                 'WebSocket-Origin: http://127.0.0.1:%s' % self.port,
+                                 'WebSocket-Location: ws://127.0.0.1:%s/echo\r\n\r\n' % self.port]))
 
     def test_correct_traversal_upgrade_request(self):
         connect = [
                 "GET /traversal_echo HTTP/1.1",
                 "Upgrade: WebSocket",
                 "Connection: Upgrade",
-                "Host: localhost:%s" % self.port,
-                "Origin: http://localhost:%s" % self.port,
+                "Host: 127.0.0.1:%s" % self.port,
+                "Origin: http://127.0.0.1:%s" % self.port,
                 "WebSocket-Protocol: ws",
                 ]
         sock = eventlet.connect(
-            ('localhost', self.port))
+            ('127.0.0.1', self.port))
 
         fd = sock.makefile('rw', close=True)
         fd.write('\r\n'.join(connect) + '\r\n\r\n')
@@ -138,20 +138,20 @@ class LimitedTestCase(TestCase):
         eq_(result, '\r\n'.join(['HTTP/1.1 101 Web Socket Protocol Handshake',
                                  'Upgrade: WebSocket',
                                  'Connection: Upgrade',
-                                 'WebSocket-Origin: http://localhost:%s' % self.port,
-                                 'WebSocket-Location: ws://localhost:%s/traversal_echo\r\n\r\n' % self.port]))
+                                 'WebSocket-Origin: http://127.0.0.1:%s' % self.port,
+                                 'WebSocket-Location: ws://127.0.0.1:%s/traversal_echo\r\n\r\n' % self.port]))
 
     def test_sending_messages_to_websocket(self):
         connect = [
                 "GET /echo HTTP/1.1",
                 "Upgrade: WebSocket",
                 "Connection: Upgrade",
-                "Host: localhost:%s" % self.port,
-                "Origin: http://localhost:%s" % self.port,
+                "Host: 127.0.0.1:%s" % self.port,
+                "Origin: http://127.0.0.1:%s" % self.port,
                 "WebSocket-Protocol: ws",
                 ]
         sock = eventlet.connect(
-            ('localhost', self.port))
+            ('127.0.0.1', self.port))
 
         fd = sock.makefile('rw', close=True)
         fd.write('\r\n'.join(connect) + '\r\n\r\n')
@@ -160,13 +160,13 @@ class LimitedTestCase(TestCase):
         fd.write('\x00hello\xFF')
         fd.flush()
         result = sock.recv(1024)
-        eq_(result, '\x00http://localhost:%s says hello\xff' % self.port)
+        eq_(result, '\x00http://127.0.0.1:%s says hello\xff' % self.port)
         fd.write('\x00start')
         fd.flush()
         fd.write(' end\xff')
         fd.flush()
         result = sock.recv(1024)
-        eq_(result, '\x00http://localhost:%s says start end\xff' % self.port)
+        eq_(result, '\x00http://127.0.0.1:%s says start end\xff' % self.port)
         fd.write('')
         fd.flush()
 
@@ -177,12 +177,12 @@ class LimitedTestCase(TestCase):
                 "GET /range HTTP/1.1",
                 "Upgrade: WebSocket",
                 "Connection: Upgrade",
-                "Host: localhost:%s" % self.port,
-                "Origin: http://localhost:%s" % self.port,
+                "Host: 127.0.0.1:%s" % self.port,
+                "Origin: http://127.0.0.1:%s" % self.port,
                 "WebSocket-Protocol: ws",
                 ]
         sock = eventlet.connect(
-            ('localhost', self.port))
+            ('127.0.0.1', self.port))
 
         fd = sock.makefile('rw', close=True)
         fd.write('\r\n'.join(connect) + '\r\n\r\n')
@@ -202,12 +202,12 @@ class LimitedTestCase(TestCase):
                 "GET /range HTTP/1.1",
                 "Upgrade: WebSocket",
                 "Connection: Upgrade",
-                "Host: localhost:%s" % self.port,
-                "Origin: http://localhost:%s" % self.port,
+                "Host: 127.0.0.1:%s" % self.port,
+                "Origin: http://127.0.0.1:%s" % self.port,
                 "WebSocket-Protocol: ws",
                 ]
         sock = eventlet.connect(
-            ('localhost', self.port))
+            ('127.0.0.1', self.port))
 
         fd = sock.makefile('rw', close=True)
         fd.write('\r\n'.join(connect) + '\r\n\r\n')

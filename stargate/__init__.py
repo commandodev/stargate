@@ -18,7 +18,7 @@ def is_websocket(context, request):
     :meth:`repoze.bfg.configuration.Configurator.add_view`
     """
     try:
-        return (request.headers['Upgrade'] == 'WebSocket') and \
+        return (request.headers['Upgrade'].lower() == 'websocket') and \
                (request.headers['Connection'] == 'Upgrade')
     except KeyError:
         return False
