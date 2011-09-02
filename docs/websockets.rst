@@ -147,7 +147,7 @@ around a socket that sends text messages packed in the ``\x00`` and ``\xFF`` byt
 
 
 .. [WebSockets] http://en.wikipedia.org/wiki/Web_Sockets
-.. [hybi10]_ http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-10
+.. [hybi10] http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-10
 .. [ws76] http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76
 .. [ws75] http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-75
 
