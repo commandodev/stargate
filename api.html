@@ -25,6 +25,7 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="stargate 0.5 documentation" href="index.html" />
+    <link rel="next" title="Changelog" href="HISTORY.html" />
     <link rel="prev" title="Examples" href="examples.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
@@ -52,6 +53,9 @@
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
         <li class="right" >
+          <a href="HISTORY.html" title="Changelog"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
           <a href="examples.html" title="Examples"
              accesskey="P">previous</a> |</li>
         <li><a href="index.html">stargate 0.5 documentation</a> &raquo;</li> 
@@ -67,75 +71,11 @@
 <h1>Modules<a class="headerlink" href="#modules" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="module-stargate">
 <span id="stargate"></span><h2><a class="reference internal" href="#module-stargate" title="stargate"><tt class="xref py py-mod docutils literal"><span class="pre">stargate</span></tt></a><a class="headerlink" href="#module-stargate" title="Permalink to this headline">¶</a></h2>
-<p>WebSocket support for pyramid is implemented as a <a class="reference internal" href="#stargate.WebSocketView" title="stargate.WebSocketView"><tt class="xref py py-class docutils literal"><span class="pre">view</span></tt></a>
+<p>WebSocket support for pyramid is implemented as a <tt class="xref py py-class docutils literal"><span class="pre">view</span></tt>
 which handles the upgrade request and a
 <a class="reference internal" href="#stargate.resource.WebSocketAwareResource" title="stargate.resource.WebSocketAwareResource"><tt class="xref py py-class docutils literal"><span class="pre">resource</span></tt></a> which manages the
 persistent connected clients. Both should be subclassed to provide send and receive
 functionality desired</p>
-<dl class="exception">
-<dt id="stargate.IncorrectlyConfigured">
-<em class="property">exception </em><tt class="descclassname">stargate.</tt><tt class="descname">IncorrectlyConfigured</tt><a class="headerlink" href="#stargate.IncorrectlyConfigured" title="Permalink to this definition">¶</a></dt>
-<dd><p>Exception to use in place of an assertion error</p>
-</dd></dl>
-
-<dl class="class">
-<dt id="stargate.WebSocketView">
-<em class="property">class </em><tt class="descclassname">stargate.</tt><tt class="descname">WebSocketView</tt><big>(</big><em>request</em><big>)</big><a class="headerlink" href="#stargate.WebSocketView" title="Permalink to this definition">¶</a></dt>
-<dd><p>A view for handling websockets</p>
-<p>This view handles both the upgrade request and the ongoing socket
-communiction.</p>
-<dl class="method">
-<dt id="stargate.WebSocketView.handle_upgrade">
-<tt class="descname">handle_upgrade</tt><big>(</big><big>)</big><a class="headerlink" href="#stargate.WebSocketView.handle_upgrade" title="Permalink to this definition">¶</a></dt>
-<dd><p>Completes the upgrade request sent by the browser</p>
-<p>Sends the headers required to set up to websocket connection back to
-the browser and then hands off to <a class="reference internal" href="#stargate.WebSocketView.handle_websocket" title="stargate.WebSocketView.handle_websocket"><tt class="xref py py-meth docutils literal"><span class="pre">handle_websocket()</span></tt></a>.</p>
-<p>See <a class="reference internal" href="#websocket-protocol">[websocket_protocol]</a></p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-exc docutils literal"><span class="pre">webob.exc.HTTPBadRequest</span></tt> if handshake fails</td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="stargate.WebSocketView.handle_websocket">
-<tt class="descname">handle_websocket</tt><big>(</big><em>websocket</em><big>)</big><a class="headerlink" href="#stargate.WebSocketView.handle_websocket" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handles the connection after setup and handshake is done</p>
-<p>Hands off to <a class="reference internal" href="#stargate.WebSocketView.handler" title="stargate.WebSocketView.handler"><tt class="xref py py-meth docutils literal"><span class="pre">handler()</span></tt></a> until the socket is closed and then
-ensures a correct <a class="reference external" href="http://pythonpaste.org/webob/modules/webob.html#webob.Response" title="(in WebOb v1.0)"><tt class="xref py py-class docutils literal"><span class="pre">webob.Response</span></tt></a> is returned after the socket
-is closed</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>websocket</strong> &#8211; A <tt class="xref py py-class docutils literal"><span class="pre">WebSocket</span></tt></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-<dl class="method">
-<dt id="stargate.WebSocketView.handler">
-<tt class="descname">handler</tt><big>(</big><em>websocket</em><big>)</big><a class="headerlink" href="#stargate.WebSocketView.handler" title="Permalink to this definition">¶</a></dt>
-<dd><p>Handles the interaction with the websocket after being set up</p>
-<p>This is the method to override in subclasses to receive and send
-messages over the websocket connection</p>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>websocket</strong> &#8211; A <a class="reference external" href="http://eventlet.net/doc/modules/websocket.html#eventlet.websocket.WebSocket" title="(in Eventlet v0.9)"><tt class="xref py py-class docutils literal"><span class="pre">WebSocket</span></tt></a></td>
-</tr>
-</tbody>
-</table>
-</dd></dl>
-
-</dd></dl>
-
 <dl class="function">
 <dt id="stargate.is_websocket">
 <tt class="descclassname">stargate.</tt><tt class="descname">is_websocket</tt><big>(</big><em>context</em>, <em>request</em><big>)</big><a class="headerlink" href="#stargate.is_websocket" title="Permalink to this definition">¶</a></dt>
@@ -145,17 +85,18 @@ and the <tt class="docutils literal"><span class="pre">custom_predicate</span></
 <tt class="xref py py-meth docutils literal"><span class="pre">repoze.bfg.configuration.Configurator.add_view()</span></tt></p>
 </dd></dl>
 
+<p><a class="reference internal" href="#stargate.view.WebSocketView" title="stargate.view.WebSocketView"><tt class="xref py py-class docutils literal"><span class="pre">WebSocketView</span></tt></a> and <a class="reference internal" href="#stargate.resource.WebSocketAwareResource" title="stargate.resource.WebSocketAwareResource"><tt class="xref py py-class docutils literal"><span class="pre">WebSocketAwareResource</span></tt></a> are also available in this namespace, and this is the prefered location to use them from</p>
 </div>
 <div class="section" id="module-stargate.resource">
 <span id="stargate-resource"></span><h2><a class="reference internal" href="#module-stargate.resource" title="stargate.resource"><tt class="xref py py-mod docutils literal"><span class="pre">stargate.resource</span></tt></a><a class="headerlink" href="#module-stargate.resource" title="Permalink to this headline">¶</a></h2>
 <p>This module supplies a class which can be subclassed or mixed in and used in
-conjunction with <a class="reference internal" href="#stargate.WebSocketView" title="stargate.WebSocketView"><tt class="xref py py-class docutils literal"><span class="pre">WebSocketView</span></tt></a>. It provides
+conjunction with <tt class="xref py py-class docutils literal"><span class="pre">WebSocketView</span></tt>. It provides
 functionality for adding and removing
 <a class="reference external" href="http://eventlet.net/doc/modules/websocket.html#eventlet.websocket.WebSocket" title="(in Eventlet v0.9)"><tt class="xref py py-class docutils literal"><span class="pre">websockets</span></tt></a> as listeners for events</p>
 <dl class="class">
 <dt id="stargate.resource.WebSocketAwareResource">
 <em class="property">class </em><tt class="descclassname">stargate.resource.</tt><tt class="descname">WebSocketAwareResource</tt><a class="headerlink" href="#stargate.resource.WebSocketAwareResource" title="Permalink to this definition">¶</a></dt>
-<dd><p>An object in a <a class="reference external" href="http://docs.pylonsproject.org/projects/pyramid/dev/glossary.html#term-traversal" title="(in The Pyramid Web Application Development Framework v1.0a9)"><em>traversal</em></a> graph that handles websockets</p>
+<dd><p>An object in a <a class="reference external" href="http://docs.pylonsproject.org/projects/pyramid/dev/glossary.html#term-traversal" title="(in The Pyramid Web Application Development Framework v1.2a1)"><em>traversal</em></a> graph that handles websockets</p>
 <p>It is designed to be persistent and to route messages to attached clients</p>
 <dl class="method">
 <dt id="stargate.resource.WebSocketAwareResource.add_listener">
@@ -180,6 +121,73 @@ functionality for adding and removing
 <tt class="descname">send</tt><big>(</big><em>message</em><big>)</big><a class="headerlink" href="#stargate.resource.WebSocketAwareResource.send" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sends <tt class="docutils literal"><span class="pre">message</span></tt> to all sockets in the set of <a class="reference internal" href="#stargate.resource.WebSocketAwareResource.listeners" title="stargate.resource.WebSocketAwareResource.listeners"><tt class="xref py py-attr docutils literal"><span class="pre">listeners</span></tt></a></p>
 <p>It will clear up any websockets that are no longer connected</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+<div class="section" id="module-stargate.view">
+<span id="stargate-view"></span><h2><a class="reference internal" href="#module-stargate.view" title="stargate.view"><tt class="xref py py-mod docutils literal"><span class="pre">stargate.view</span></tt></a><a class="headerlink" href="#module-stargate.view" title="Permalink to this headline">¶</a></h2>
+<dl class="exception">
+<dt id="stargate.view.IncorrectlyConfigured">
+<em class="property">exception </em><tt class="descclassname">stargate.view.</tt><tt class="descname">IncorrectlyConfigured</tt><a class="headerlink" href="#stargate.view.IncorrectlyConfigured" title="Permalink to this definition">¶</a></dt>
+<dd><p>Exception to use in place of an assertion error</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="stargate.view.WebSocketView">
+<em class="property">class </em><tt class="descclassname">stargate.view.</tt><tt class="descname">WebSocketView</tt><big>(</big><em>request</em><big>)</big><a class="headerlink" href="#stargate.view.WebSocketView" title="Permalink to this definition">¶</a></dt>
+<dd><p>A view for handling websockets</p>
+<p>This view handles both the upgrade request and the ongoing socket
+communiction.</p>
+<dl class="method">
+<dt id="stargate.view.WebSocketView.handle_upgrade">
+<tt class="descname">handle_upgrade</tt><big>(</big><big>)</big><a class="headerlink" href="#stargate.view.WebSocketView.handle_upgrade" title="Permalink to this definition">¶</a></dt>
+<dd><p>Completes the upgrade request sent by the browser</p>
+<p>Sends the headers required to set up to websocket connection back to
+the browser and then hands off to <a class="reference internal" href="#stargate.view.WebSocketView.handle_websocket" title="stargate.view.WebSocketView.handle_websocket"><tt class="xref py py-meth docutils literal"><span class="pre">handle_websocket()</span></tt></a>.</p>
+<p>See <a class="reference internal" href="#websocket-protocol">[websocket_protocol]</a></p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><tt class="xref py py-exc docutils literal"><span class="pre">webob.exc.HTTPBadRequest</span></tt> if handshake fails</td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="stargate.view.WebSocketView.handle_websocket">
+<tt class="descname">handle_websocket</tt><big>(</big><em>websocket</em><big>)</big><a class="headerlink" href="#stargate.view.WebSocketView.handle_websocket" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles the connection after setup and handshake is done</p>
+<p>Hands off to <a class="reference internal" href="#stargate.view.WebSocketView.handler" title="stargate.view.WebSocketView.handler"><tt class="xref py py-meth docutils literal"><span class="pre">handler()</span></tt></a> until the socket is closed and then
+ensures a correct <tt class="xref py py-class docutils literal"><span class="pre">webob.Response</span></tt> is returned after the socket
+is closed</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>websocket</strong> &#8211; A <tt class="xref py py-class docutils literal"><span class="pre">WebSocket</span></tt></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="method">
+<dt id="stargate.view.WebSocketView.handler">
+<tt class="descname">handler</tt><big>(</big><em>websocket</em><big>)</big><a class="headerlink" href="#stargate.view.WebSocketView.handler" title="Permalink to this definition">¶</a></dt>
+<dd><p>Handles the interaction with the websocket after being set up</p>
+<p>This is the method to override in subclasses to receive and send
+messages over the websocket connection</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>websocket</strong> &#8211; A <a class="reference external" href="http://eventlet.net/doc/modules/websocket.html#eventlet.websocket.WebSocket" title="(in Eventlet v0.9)"><tt class="xref py py-class docutils literal"><span class="pre">WebSocket</span></tt></a></td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </dd></dl>
@@ -225,7 +233,7 @@ changes</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>headers</strong> &#8211; <a class="reference external" href="http://pythonpaste.org/webob/modules/webob.html#webob.headers.EnvironHeaders" title="(in WebOb v1.0)"><tt class="xref py py-class docutils literal"><span class="pre">webob.headers.EnvironHeaders</span></tt></a></td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>headers</strong> &#8211; <a class="reference external" href="http://pythonpaste.org/webob/modules/webob.html#webob.headers.EnvironHeaders" title="(in WebOb v1.1rc1)"><tt class="xref py py-class docutils literal"><span class="pre">webob.headers.EnvironHeaders</span></tt></a></td>
 </tr>
 </tbody>
 </table>
@@ -288,8 +296,8 @@ versions and then hands off to the spec specific implementations.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>headers</strong> (<a class="reference external" href="http://pythonpaste.org/webob/modules/webob.html#webob.headers.EnvironHeaders" title="(in WebOb v1.0)"><tt class="xref py py-class docutils literal"><span class="pre">webob.headers.EnvironHeaders</span></tt></a>) &#8211; The websocket upgrade request headers
-(headers attribute from <a class="reference external" href="http://pythonpaste.org/webob/modules/webob.html#webob.Request" title="(in WebOb v1.0)"><tt class="xref py py-class docutils literal"><span class="pre">webob.Request</span></tt></a>)</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>headers</strong> (<a class="reference external" href="http://pythonpaste.org/webob/modules/webob.html#webob.headers.EnvironHeaders" title="(in WebOb v1.1rc1)"><tt class="xref py py-class docutils literal"><span class="pre">webob.headers.EnvironHeaders</span></tt></a>) &#8211; The websocket upgrade request headers
+(headers attribute from <tt class="xref py py-class docutils literal"><span class="pre">webob.Request</span></tt>)</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Raises :</th><td class="field-body"><a class="reference internal" href="#stargate.handshake.HandShakeFailed" title="stargate.handshake.HandShakeFailed"><tt class="xref py py-exc docutils literal"><span class="pre">HandShakeFailed</span></tt></a>, <a class="reference internal" href="#stargate.handshake.InvalidOrigin" title="stargate.handshake.InvalidOrigin"><tt class="xref py py-exc docutils literal"><span class="pre">InvalidOrigin</span></tt></a></td>
 </tr>
@@ -309,13 +317,13 @@ versions and then hands off to the spec specific implementations.</p>
 <table class="docutils citation" frame="void" id="websocket-protocol" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[websocket_protocol]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Web_Sockets#WebSocket_Protocol_Handshake">http://en.wikipedia.org/wiki/Web_Sockets#WebSocket_Protocol_Handshake</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id2">[websocket_protocol]</a></td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Web_Sockets#WebSocket_Protocol_Handshake">http://en.wikipedia.org/wiki/Web_Sockets#WebSocket_Protocol_Handshake</a></td></tr>
 </tbody>
 </table>
 <table class="docutils citation" frame="void" id="predicate-arguments" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[predicate_arguments]</a></td><td><a class="reference external" href="http://docs.repoze.org/bfg/1.3/narr/views.html#predicate-arguments">http://docs.repoze.org/bfg/1.3/narr/views.html#predicate-arguments</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id1">[predicate_arguments]</a></td><td><a class="reference external" href="http://docs.repoze.org/bfg/1.3/narr/views.html#predicate-arguments">http://docs.repoze.org/bfg/1.3/narr/views.html#predicate-arguments</a></td></tr>
 </tbody>
 </table>
 </div>
@@ -332,6 +340,7 @@ versions and then hands off to the spec specific implementations.</p>
 <li><a class="reference internal" href="#">Modules</a><ul>
 <li><a class="reference internal" href="#module-stargate"><tt class="docutils literal"><span class="pre">stargate</span></tt></a></li>
 <li><a class="reference internal" href="#module-stargate.resource"><tt class="docutils literal"><span class="pre">stargate.resource</span></tt></a></li>
+<li><a class="reference internal" href="#module-stargate.view"><tt class="docutils literal"><span class="pre">stargate.view</span></tt></a></li>
 <li><a class="reference internal" href="#module-stargate.factory"><tt class="docutils literal"><span class="pre">stargate.factory</span></tt></a></li>
 <li><a class="reference internal" href="#module-stargate.handshake"><tt class="docutils literal"><span class="pre">stargate.handshake</span></tt></a></li>
 </ul>
@@ -341,6 +350,9 @@ versions and then hands off to the spec specific implementations.</p>
   <h4>Previous topic</h4>
   <p class="topless"><a href="examples.html"
                         title="previous chapter">Examples</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="HISTORY.html"
+                        title="next chapter">Changelog</a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -367,6 +379,9 @@ versions and then hands off to the spec specific implementations.</p>
         <li class="right" >
           <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="HISTORY.html" title="Changelog"
+             >next</a> |</li>
         <li class="right" >
           <a href="examples.html" title="Examples"
              >previous</a> |</li>

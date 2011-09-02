@@ -7,7 +7,7 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Python Module Index &mdash; stargate 0.5 documentation</title>
+    <title>Changelog &mdash; stargate 0.5 documentation</title>
     
     <link rel="stylesheet" href="_static/pyramid.css" type="text/css" />
     <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
@@ -25,14 +25,12 @@
     <script type="text/javascript" src="_static/underscore.js"></script>
     <script type="text/javascript" src="_static/doctools.js"></script>
     <link rel="top" title="stargate 0.5 documentation" href="index.html" />
-
+    <link rel="prev" title="Modules" href="api.html" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Neuton&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Nobile:regular,italic,bold,bolditalic&amp;subset=latin" type="text/css" media="screen" charset="utf-8" />
 <!--[if lte IE 6]>
 <link rel="stylesheet" href="_static/ie6.css" type="text/css" media="screen" charset="utf-8" />
 <![endif]-->
-
-
 
   </head>
   <body>
@@ -51,8 +49,11 @@
           <a href="genindex.html" title="General Index"
              accesskey="I">index</a></li>
         <li class="right" >
-          <a href="#" title="Python Module Index"
+          <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="Modules"
+             accesskey="P">previous</a> |</li>
         <li><a href="index.html">stargate 0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>  
@@ -62,44 +63,39 @@
         <div class="bodywrapper">
           <div class="body">
             
-
-   <h1>Python Module Index</h1>
-
-   <div class="modindex-jumpbox">
-   <a href="#cap-s"><strong>s</strong></a>
-   </div>
-
-   <table class="indextable modindextable" cellspacing="0" cellpadding="2">
-     <tr class="pcap"><td></td><td>&nbsp;</td><td></td></tr>
-     <tr class="cap" id="cap-s"><td></td><td>
-       <strong>s</strong></td><td></td></tr>
-     <tr>
-       <td><img src="_static/minus.png" class="toggler"
-              id="toggle-1" style="display: none" alt="-" /></td>
-       <td>
-       <a href="api.html#module-stargate"><tt class="xref">stargate</tt></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&nbsp;&nbsp;&nbsp;
-       <a href="api.html#module-stargate.factory"><tt class="xref">stargate.factory</tt></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&nbsp;&nbsp;&nbsp;
-       <a href="api.html#module-stargate.handshake"><tt class="xref">stargate.handshake</tt></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&nbsp;&nbsp;&nbsp;
-       <a href="api.html#module-stargate.resource"><tt class="xref">stargate.resource</tt></a></td><td>
-       <em></em></td></tr>
-     <tr class="cg-1">
-       <td></td>
-       <td>&nbsp;&nbsp;&nbsp;
-       <a href="api.html#module-stargate.view"><tt class="xref">stargate.view</tt></a></td><td>
-       <em></em></td></tr>
-   </table>
+  <div class="section" id="changelog">
+<h1>Changelog<a class="headerlink" href="#changelog" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="id1">
+<h2>0.4<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Add support for the HyBi version of WebSockets (specifically version-10). This version was released to solve some previous security concerns and</li>
+</ul>
+<p>will be the version in Firefox 7/8 and Chrome 14 onwards accoring to Wikipedia.
+- Introduces a dependency on ws4py</p>
+<ul class="simple">
+<li>See <a class="reference external" href="http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-10">http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-10</a></li>
+</ul>
+</div>
+<div class="section" id="id2">
+<h2>0.3<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Fix bug in setup.py</li>
+<li>Improve documentation and consistency with pyramid naming</li>
+</ul>
+</div>
+<div class="section" id="id3">
+<h2>0.2<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Support for version 76 of the websocket handshake</li>
+</ul>
+</div>
+<div class="section" id="id4">
+<h2>0.1<a class="headerlink" href="#id4" title="Permalink to this headline">¶</a></h2>
+<ul class="simple">
+<li>Initial release, ported from rpz.websocket and repoze.bfg to pyramid</li>
+</ul>
+</div>
+</div>
 
 
           </div>
@@ -107,6 +103,20 @@
       </div>
       <div class="sphinxsidebar">
         <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">Changelog</a><ul>
+<li><a class="reference internal" href="#id1">0.4</a></li>
+<li><a class="reference internal" href="#id2">0.3</a></li>
+<li><a class="reference internal" href="#id3">0.2</a></li>
+<li><a class="reference internal" href="#id4">0.1</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="api.html"
+                        title="previous chapter">Modules</a></p>
 <div id="searchbox" style="display: none">
   <h3>Quick search</h3>
     <form class="search" action="search.html" method="get">
@@ -131,8 +141,11 @@
           <a href="genindex.html" title="General Index"
              >index</a></li>
         <li class="right" >
-          <a href="#" title="Python Module Index"
+          <a href="py-modindex.html" title="Python Module Index"
              >modules</a> |</li>
+        <li class="right" >
+          <a href="api.html" title="Modules"
+             >previous</a> |</li>
         <li><a href="index.html">stargate 0.5 documentation</a> &raquo;</li> 
       </ul>
     </div>

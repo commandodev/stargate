@@ -45,6 +45,42 @@ On the server side things are slightly more complex. The server must:
  * Receive messages from the client
  * Route messages to the client
 
+The following refers to the hybi version 10 websocket spec [hybi10]_
+
+Handshake
+---------
+
+From the browser::
+
+    GET /ws HTTP/1.1
+    Host: pmx
+    Upgrade: websocket
+    Connection: Upgrade
+    Sec-WebSocket-Version: 6
+    Sec-WebSocket-Origin: http://pmx
+    Sec-WebSocket-Extensions: deflate-stream
+    Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==
+
+The server sends back::
+
+    HTTP/1.1 101 Switching Protocols
+    Upgrade: websocket
+    Connection: Upgrade
+    Sec-WebSocket-Accept: HSmrc0sMlYUkAGmm5OPpG2HaGWk=
+
+.. note:: There are also mechanisms for sub-protocols and extension. These haven't been implemented yet
+
+See the [WebSockets] Wikipedia page for more details.
+
+The part of the protocol that deals with framing is much more extensive than the older versions. Framing is handled by
+the ws4py library.
+
+Older Versions
+==============
+
+.. note:: The following is included for historical reasons only - as I understand it these have been disabled by default
+    for security reasons in most browsers.
+
 Handshake
 ---------
 
@@ -110,9 +146,8 @@ websocket connection from the client to the server. This is a pretty thin wrappe
 around a socket that sends text messages packed in the ``\x00`` and ``\xFF`` bytes.
 
 
-
-
 .. [WebSockets] http://en.wikipedia.org/wiki/Web_Sockets
-.. [ws75] http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-75
+.. [hybi10] http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-10
 .. [ws76] http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76
+.. [ws75] http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-75
 

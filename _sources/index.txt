@@ -14,7 +14,7 @@ Advantages
 ----------
 
 Most existing implementations of a WebSocket capable server run stand alone from
-your web app, usually on a different port or host. ``stargate`` allows you
+your web app, usually on a different port or host. :mod:`stargate` allows you
 to connect persistent connection directly to the same objects that comprise your
 application. The advantages of this approach will become apparent in the examples
 section.
@@ -28,7 +28,7 @@ Contents:
    websockets
    examples
    api
-
+   HISTORY
 
 
 Indices and tables

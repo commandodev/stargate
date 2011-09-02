@@ -105,8 +105,43 @@ between the client and the server</p>
 <li>Route messages to the client</li>
 </ul>
 </div></blockquote>
+<p>The following refers to the hybi version 10 websocket spec <a class="reference internal" href="#hybi10">[hybi10]</a></p>
 <div class="section" id="handshake">
 <h3>Handshake<a class="headerlink" href="#handshake" title="Permalink to this headline">¶</a></h3>
+<p>From the browser:</p>
+<div class="highlight-python"><pre>GET /ws HTTP/1.1
+Host: pmx
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Version: 6
+Sec-WebSocket-Origin: http://pmx
+Sec-WebSocket-Extensions: deflate-stream
+Sec-WebSocket-Key: x3JJHMbDL1EzLkh9GBhXDw==</pre>
+</div>
+<p>The server sends back:</p>
+<div class="highlight-python"><pre>HTTP/1.1 101 Switching Protocols
+Upgrade: websocket
+Connection: Upgrade
+Sec-WebSocket-Accept: HSmrc0sMlYUkAGmm5OPpG2HaGWk=</pre>
+</div>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">There are also mechanisms for sub-protocols and extension. These haven&#8217;t been implemented yet</p>
+</div>
+<p>See the [WebSockets] Wikipedia page for more details.</p>
+<p>The part of the protocol that deals with framing is much more extensive than the older versions. Framing is handled by
+the ws4py library.</p>
+</div>
+</div>
+<div class="section" id="older-versions">
+<h2>Older Versions<a class="headerlink" href="#older-versions" title="Permalink to this headline">¶</a></h2>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The following is included for historical reasons only - as I understand it these have been disabled by default
+for security reasons in most browsers.</p>
+</div>
+<div class="section" id="id2">
+<h3>Handshake<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>The handshake version of the WebSocket protocol underwent a major revision at version 76 <a class="reference internal" href="#ws76">[ws76]</a>.
 As of version 0.2, Stargate supports both this and the older <a class="reference internal" href="#ws75">[ws75]</a>. Examples of both are below:</p>
 <div class="section" id="version-76">
@@ -164,16 +199,22 @@ around a socket that sends text messages packed in the <tt class="docutils liter
 <tr><td class="label">[WebSockets]</td><td><a class="reference external" href="http://en.wikipedia.org/wiki/Web_Sockets">http://en.wikipedia.org/wiki/Web_Sockets</a></td></tr>
 </tbody>
 </table>
-<table class="docutils citation" frame="void" id="ws75" rules="none">
+<table class="docutils citation" frame="void" id="hybi10" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id2">[ws75]</a></td><td><a class="reference external" href="http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-75">http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-75</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id1">[hybi10]</a></td><td><a class="reference external" href="http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-10">http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-10</a></td></tr>
 </tbody>
 </table>
 <table class="docutils citation" frame="void" id="ws76" rules="none">
 <colgroup><col class="label" /><col /></colgroup>
 <tbody valign="top">
-<tr><td class="label"><a class="fn-backref" href="#id1">[ws76]</a></td><td><a class="reference external" href="http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76">http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76</a></td></tr>
+<tr><td class="label"><a class="fn-backref" href="#id3">[ws76]</a></td><td><a class="reference external" href="http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76">http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-76</a></td></tr>
+</tbody>
+</table>
+<table class="docutils citation" frame="void" id="ws75" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id4">[ws75]</a></td><td><a class="reference external" href="http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-75">http://tools.ietf.org/html/draft-hixie-thewebsocketprotocol-75</a></td></tr>
 </tbody>
 </table>
 </div>
@@ -190,7 +231,11 @@ around a socket that sends text messages packed in the <tt class="docutils liter
   <ul>
 <li><a class="reference internal" href="#">What are WebSockets?</a><ul>
 <li><a class="reference internal" href="#how-do-they-work">How do they work?</a><ul>
-<li><a class="reference internal" href="#handshake">Handshake</a><ul>
+<li><a class="reference internal" href="#handshake">Handshake</a></li>
+</ul>
+</li>
+<li><a class="reference internal" href="#older-versions">Older Versions</a><ul>
+<li><a class="reference internal" href="#id2">Handshake</a><ul>
 <li><a class="reference internal" href="#version-76">Version 76</a></li>
 <li><a class="reference internal" href="#version-75-and-older">Version 75 and older</a></li>
 </ul>
