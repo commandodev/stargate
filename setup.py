@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import os
 
-version = '0.3'
+version = '0.4'
 
 setup(name='stargate',
       version=version,
@@ -16,7 +16,7 @@ setup(name='stargate',
       author='Ben Ford',
       author_email='ben@boothead.co.uk',
       url='http://github.com/boothead/stargate',
-      license='MIT',
+      license='BSD',
       packages=find_packages(exclude=['ez_setup']),
       include_package_data=True,
       zip_safe=False,
