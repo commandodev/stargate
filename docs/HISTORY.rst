@@ -1,6 +1,15 @@
 Changelog
 =========
 
+0.4
+---
+
+- Add support for the HyBi version of WebSockets (specifically version-10). This version was released to solve some previous security concerns and
+will be the version in Firefox 7/8 and Chrome 14 onwards accoring to Wikipedia.
+- Introduces a dependency on ws4py
+
+- See http://tools.ietf.org/html/draft-ietf-hybi-thewebsocketprotocol-10
+
 0.3
 ---
 
