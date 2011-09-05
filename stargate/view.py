@@ -239,7 +239,6 @@ class WebSocketView(object):
         #from nose.tools import set_trace; set_trace()
         try:
             v, handshake_reply = websocket_handshake(self.request.headers)
-            print v, handshake_reply
         except HandShakeFailed:
             _, val, _ = sys.exc_info()
             response = HTTPBadRequest(headers=dict(Connection='Close'),
