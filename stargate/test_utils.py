@@ -2,10 +2,10 @@ import pyramid_zcml
 import eventlet
 import logging
 from eventlet import Queue, greenthread, hubs, wsgi
-from pyramid.exceptions import NotFound
 from pyramid import testing
+from pyramid.exceptions import NotFound
+from pyramid.httpexceptions import HTTPNotFound
 from StringIO import StringIO
-from webob.exc import HTTPNotFound
 
 from stargate import WebSocketView
 
@@ -17,7 +17,7 @@ def get_root(request):
 
 def not_found(context, request):
     assert(isinstance(context, NotFound))
-    return HTTPNotFound('404')
+    return HTTPNotFound()
 
 
 class Fixture(object):

@@ -7,7 +7,7 @@ from eventlet.support import get_errno
 from eventlet.green import socket
 from eventlet.websocket import WebSocket as v76WebSocket
 from webob import Response
-from webob.exc import HTTPBadRequest
+from pyramid.httpexceptions import HTTPBadRequest
 from ws4py.streaming import Stream
 
 from stargate.handshake import websocket_handshake, HandShakeFailed
@@ -236,13 +236,15 @@ class WebSocketView(object):
 
         :returns: :exc:`webob.exc.HTTPBadRequest` if handshake fails
         """
+        #from nose.tools import set_trace; set_trace()
         try:
             v, handshake_reply = websocket_handshake(self.request.headers)
+            print v, handshake_reply
         except HandShakeFailed:
             _, val, _ = sys.exc_info()
-            response = HTTPBadRequest(headers=dict(Connection='Close'))
-            response.body = 'Upgrade negotiation failed:\n\t%s\n%s' % \
-                            (val, self.request.headers)
+            response = HTTPBadRequest(headers=dict(Connection='Close'),
+                                      body='Upgrade negotiation failed:\n\t%s\n%s' % \
+                                                (val, self.request.headers))
             return response
         sock = self.environ['eventlet.input'].get_socket()
         sock.sendall(handshake_reply)

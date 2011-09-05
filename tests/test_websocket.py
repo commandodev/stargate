@@ -48,6 +48,7 @@ class LimitedTestCase(TestCase):
         self.port = fixture.port
         self.set_timeout(self.TEST_TIMEOUT)
 
+
     def tearDown(self):
         eventlet.sleep(0)
         if self.timer:
@@ -88,7 +89,6 @@ class LimitedTestCase(TestCase):
         http = httplib.HTTPConnection('127.0.0.1', self.port)
         http.request("GET", "/echo", headers=headers)
         resp = http.getresponse()
-
         self.assertEqual(resp.status, 400)
         self.assertEqual(resp.getheader('connection'), 'Close')
         self.assert_(resp.read().startswith('Upgrade negotiation failed:'))
@@ -220,5 +220,5 @@ fixture = Fixture(routes=[('echo', '/echo', dict(view=EchoWebsocket)),
                               view=EchoWebsocket,
                               custom_predicates=[is_websocket])])
 setup_module = fixture.start_server
-teardown_modulw = fixture.clear_up
+teardown_module = fixture.clear_up
 
