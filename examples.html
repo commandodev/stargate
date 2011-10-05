@@ -69,6 +69,279 @@
             
   <div class="section" id="examples">
 <h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>The following is a simple one page example of using <a class="reference internal" href="api.html#stargate.resource.WebSocketAwareResource" title="stargate.resource.WebSocketAwareResource"><tt class="xref py py-class docutils literal"><span class="pre">WebSocketAwareResource</span></tt></a>
+and <a class="reference internal" href="api.html#stargate.view.WebSocketView" title="stargate.view.WebSocketView"><tt class="xref py py-class docutils literal"><span class="pre">WebSocketView</span></tt></a> with <a class="reference internal" href="#traversal">[Traversal]</a> to control persistent objects in the
+<tt class="docutils literal"><span class="pre">resource</span> <span class="pre">tree</span></tt>. These persistent objects communicate the control changes to connected clients
+via a <a class="reference internal" href="websockets.html#websockets">[WebSockets]</a> connection.</p>
+<div class="highlight-python"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre>  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131</pre></div></td><td class="code"><div class="highlight"><pre><span class="kn">import</span> <span class="nn">eventlet</span>
+<span class="kn">from</span> <span class="nn">eventlet</span> <span class="kn">import</span> <span class="n">wsgi</span>
+<span class="kn">from</span> <span class="nn">paste.httpserver</span> <span class="kn">import</span> <span class="n">serve</span>
+<span class="kn">from</span> <span class="nn">pyramid.config</span> <span class="kn">import</span> <span class="n">Configurator</span>
+<span class="kn">from</span> <span class="nn">pyramid.response</span> <span class="kn">import</span> <span class="n">Response</span>
+<span class="kn">from</span> <span class="nn">pyramid.view</span> <span class="kn">import</span> <span class="n">view_config</span>
+<span class="kn">from</span> <span class="nn">stargate</span> <span class="kn">import</span> <span class="n">WebSocketAwareResource</span><span class="p">,</span> <span class="n">WebSocketView</span><span class="p">,</span> <span class="n">is_websocket</span>
+<span class="kn">import</span> <span class="nn">simplejson</span> <span class="kn">as</span> <span class="nn">json</span>
+
+<span class="n">host</span> <span class="o">=</span> <span class="s">&quot;127.0.0.1&quot;</span>
+<span class="n">port</span> <span class="o">=</span> <span class="mi">9999</span>
+
+<span class="n">home_html</span> <span class="o">=</span> <span class="s">&quot;&quot;&quot;</span><span class="se">\</span>
+<span class="s">&lt;html&gt;</span>
+<span class="s">    &lt;head&gt;</span>
+<span class="s">        &lt;script type=&quot;text/javascript&quot; src=&quot;http://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js&quot;&gt;&lt;/script&gt;</span>
+<span class="s">        &lt;script&gt;</span>
+<span class="s">            $(function() {</span>
+<span class="s">    ws = new WebSocket(&quot;ws://</span><span class="si">%(host)s</span><span class="s">:</span><span class="si">%(port)s</span><span class="s">/jobs/1/&quot;);</span>
+<span class="s">    ws.onmessage = function(msg) {</span>
+<span class="s">        $(&quot;body&quot;).append(&quot;&lt;p&gt;&quot; + msg.data + &quot;&lt;/p&gt;&quot;);</span>
+<span class="s">    };</span>
+<span class="s">    STARTED = false;</span>
+<span class="s">    $(&quot;#start-stop&quot;).click(function(evt) {</span>
+<span class="s">        $.post(&quot;/jobs/1/&quot;, {state: STARTED ? &quot;stop&quot; : &quot;start&quot;}, function(result) {</span>
+<span class="s">            STARTED = !STARTED;</span>
+<span class="s">            $(&#39;#start-stop span&#39;).text(STARTED ? &quot;on&quot; : &quot;off&quot;);</span>
+
+<span class="s">        });</span>
+<span class="s">    });</span>
+<span class="s">});</span>
+<span class="s">        &lt;/script&gt;</span>
+<span class="s">    &lt;/head&gt;</span>
+<span class="s">    &lt;body&gt;</span>
+<span class="s">        &lt;h1&gt;Hi&lt;/h1&gt;</span>
+<span class="s">        &lt;button id=&quot;start-stop&quot;&gt;Job 1 &lt;span&gt;off&lt;/span&gt;&lt;/button&gt;</span>
+<span class="s">    &lt;/body&gt;</span>
+<span class="s">&lt;/html&gt;</span>
+<span class="s">&quot;&quot;&quot;</span> <span class="o">%</span> <span class="nb">dict</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="n">port</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">JobRoot</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;A container for jobs</span>
+
+<span class="sd">    Gets or creates Job objects for certain ids</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">item</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span><span class="p">[</span><span class="n">item</span><span class="p">]</span>
+        <span class="k">except</span> <span class="ne">KeyError</span><span class="p">:</span>
+            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">create_job</span><span class="p">(</span><span class="n">item</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">create_job</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">):</span>
+        <span class="n">job</span> <span class="o">=</span> <span class="n">Job</span><span class="p">(</span><span class="nb">id</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_jobs</span><span class="p">[</span><span class="nb">id</span><span class="p">]</span> <span class="o">=</span> <span class="n">job</span>
+        <span class="k">return</span> <span class="n">job</span>
+
+
+<span class="k">class</span> <span class="nc">Job</span><span class="p">(</span><span class="n">WebSocketAwareResource</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;This is a permanent object.</span>
+
+<span class="sd">    It&#39;s responsible for maintaning a list of connected clients (websockets)</span>
+<span class="sd">    and updating them when its state changes</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">id</span><span class="p">,</span> <span class="n">parent</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__name__</span> <span class="o">=</span> <span class="nb">id</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">__parent__</span> <span class="o">=</span> <span class="n">parent</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="s">&quot;OFF&quot;</span>
+
+    <span class="k">def</span> <span class="nf">control</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;This function updates the state</span>
+
+<span class="sd">        Its called by the control function (in response to a post)</span>
+<span class="sd">        It triggers the sending of self.state to all connected clients. If you</span>
+<span class="sd">        connect multiple browsers (or tabs) they will all be updated</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">state</span> <span class="o">=</span> <span class="n">state</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">JobView</span><span class="p">(</span><span class="n">WebSocketView</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The view connects pyramid with the resource</span>
+
+<span class="sd">    In this simple example it simply adds the websocket to the Job&#39;s listeners.</span>
+<span class="sd">    It then goes to sleep *blocking the thread it&#39;s in* this is where eventlet</span>
+<span class="sd">    comes in. In real life you&#39;d do things like listening for updates and</span>
+<span class="sd">    handling messages coming in on the websocket in the while block.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">handler</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">websocket</span><span class="p">):</span>
+        <span class="n">job</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">request</span><span class="o">.</span><span class="n">context</span>
+        <span class="n">job</span><span class="o">.</span><span class="n">add_listener</span><span class="p">(</span><span class="n">websocket</span><span class="p">)</span>
+        <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+            <span class="n">eventlet</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="mi">60</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">control</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Post to this view to set the state</span>
+
+<span class="sd">    this will trigger Job to report the state to connected clients</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">state</span> <span class="o">=</span> <span class="n">request</span><span class="o">.</span><span class="n">POST</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">&quot;state&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">state</span><span class="p">:</span>
+        <span class="n">job</span><span class="o">.</span><span class="n">control</span><span class="p">(</span><span class="n">state</span><span class="p">)</span>
+    <span class="k">return</span> <span class="nb">dict</span><span class="p">(</span><span class="nb">id</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">__name__</span><span class="p">,</span> <span class="n">state</span><span class="o">=</span><span class="n">job</span><span class="o">.</span><span class="n">state</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">Root</span><span class="p">(</span><span class="nb">dict</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;The root of url traversal&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Root</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">__init__</span><span class="p">(</span><span class="n">jobs</span><span class="o">=</span><span class="n">JobRoot</span><span class="p">())</span>
+
+<span class="k">def</span> <span class="nf">home</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Serves up home_html, setting up a simple js demo&quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">Response</span><span class="p">(</span><span class="n">home_html</span><span class="p">)</span>
+
+<span class="n">root</span> <span class="o">=</span> <span class="n">Root</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">root_factory</span><span class="p">(</span><span class="n">request</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">root</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="s">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">config</span> <span class="o">=</span> <span class="n">Configurator</span><span class="p">(</span><span class="n">root_factory</span><span class="o">=</span><span class="n">root_factory</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">home</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">Root</span><span class="p">)</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">JobView</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">Job</span><span class="p">,</span> <span class="n">custom_predicates</span><span class="o">=</span><span class="p">[</span><span class="n">is_websocket</span><span class="p">])</span>
+    <span class="n">config</span><span class="o">.</span><span class="n">add_view</span><span class="p">(</span><span class="n">control</span><span class="p">,</span> <span class="n">context</span><span class="o">=</span><span class="n">Job</span><span class="p">,</span> <span class="n">renderer</span><span class="o">=</span><span class="s">&quot;json&quot;</span><span class="p">,</span> <span class="n">xhr</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+    <span class="n">app</span> <span class="o">=</span> <span class="n">config</span><span class="o">.</span><span class="n">make_wsgi_app</span><span class="p">()</span>
+    <span class="n">listener</span> <span class="o">=</span> <span class="n">eventlet</span><span class="o">.</span><span class="n">listen</span><span class="p">((</span><span class="n">host</span><span class="p">,</span> <span class="n">port</span><span class="p">))</span>
+    <span class="n">wsgi</span><span class="o">.</span><span class="n">server</span><span class="p">(</span><span class="n">listener</span><span class="p">,</span> <span class="n">app</span><span class="p">)</span>
+</pre></div>
+</td></tr></table></div>
+<table class="docutils citation" frame="void" id="traversal" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id1">[Traversal]</a></td><td><a class="reference external" href="https://pylonsproject.org/projects/pyramid/dev/narr/traversal.html">https://pylonsproject.org/projects/pyramid/dev/narr/traversal.html</a></td></tr>
+</tbody>
+</table>
 </div>
 
 
