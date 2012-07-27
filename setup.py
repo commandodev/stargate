@@ -22,7 +22,7 @@ setup(name='stargate',
       zip_safe=False,
       install_requires=[
           'setuptools',
-          'pyramid',
+          'pyramid==1.2a6',
           'pyramid_zcml',
           'eventlet',
           'ws4py',
