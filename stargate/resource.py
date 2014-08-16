@@ -55,7 +55,7 @@ class WebSocketAwareResource(object):
         for ws in self.listeners:
             try:
                 ws.send(message)
-            except socket.error, e: #pragma NO COVER
+            except socket.error as e: #pragma NO COVER
                 if get_errno(e) != errno.EPIPE:
                     raise
                 remove.append(ws)

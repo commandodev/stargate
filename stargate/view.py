@@ -217,7 +217,7 @@ class WebSocketView(object):
         """
         try:
             self.handler(websocket)
-        except socket.error, e: #pragma NO COVER
+        except socket.error as e: #pragma NO COVER
             if get_errno(e) != errno.EPIPE:
                 raise
         # use this undocumented feature of eventlet.wsgi to close the
