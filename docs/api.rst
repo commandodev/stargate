@@ -8,7 +8,7 @@ Modules
 .. automodule:: stargate
     :members:
 
-:class:`~stargate.view.WebSocketView` and :class:`~stargate.resource.WebSocketAwareResource` are also available in this namespace, and this is the prefered location to use them from
+:class:`~stargate.view.WebSocketView` and :class:`~stargate.resource.WebSocketAwareResource` are also available in this namespace, and this is the preferred location to use them from
 
 :mod:`stargate.resource`
 ----------------------------
